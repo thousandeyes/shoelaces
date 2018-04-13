@@ -1,0 +1,39 @@
+networkMaps:
+  - network: 20.20.20.20/24
+    script:
+      name: ubuntu-minimal.ipxe
+      params:
+        hostname: placeholder
+
+hostnameMaps:
+  - hostname: '(etcd|k8s)\d-m\d'
+    script:
+      name: coreos.ipxe
+      params:
+        version: 1122.3.0
+        cloudconfig: virtual
+  - hostname: '(etcd|k8s)\d-m\d'
+    script:
+      name: coreos.ipxe
+      params:
+        version: 1122.3.0
+        cloudconfig: virtual
+  - hostname: 'k8s1-4'
+    script:
+      name: coreos.ipxe
+      environment: staging
+      params:
+        version: 1298.6.0
+        cloudconfig: baremetal
+  - hostname: 'k8s1-\d'
+    script:
+      name: coreos.ipxe
+      params:
+        version: 1122.3.0
+        cloudconfig: baremetal
+  - hostname: 'k8s1-\d'
+    script:
+      name: coreos.ipxe
+      params:
+        version: 1122.3.0
+        cloudconfig: baremetal

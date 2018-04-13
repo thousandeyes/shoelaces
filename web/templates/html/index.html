@@ -1,0 +1,67 @@
+{{ define "index" }}
+
+<div class="container theme-showcase col-md-12" role="main">
+
+  <div id="loading">
+    <div class="row">
+      <div class="col-md-3"></div>
+      <div class="center-block col-md-6">
+        <h3 class="text-center">Waiting for MACs...</h3>
+      </div>
+      <div class="col-md-3"></div>
+    </div>
+    <div class="row">
+      <div class="sk-circle">
+        <div class="sk-circle1 sk-child"></div>
+        <div class="sk-circle2 sk-child"></div>
+        <div class="sk-circle3 sk-child"></div>
+        <div class="sk-circle4 sk-child"></div>
+        <div class="sk-circle5 sk-child"></div>
+        <div class="sk-circle6 sk-child"></div>
+        <div class="sk-circle7 sk-child"></div>
+        <div class="sk-circle8 sk-child"></div>
+        <div class="sk-circle9 sk-child"></div>
+        <div class="sk-circle10 sk-child"></div>
+        <div class="sk-circle11 sk-child"></div>
+        <div class="sk-circle12 sk-child"></div>
+      </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="center-block col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <p class="text-center">Shoelaces is waiting for a server to boot. Using iPXE, your server should reach the following endpoint:  <br /> <b class="text-primary-custom">http://{{ .BaseURL }}/poll/1/&#60;MAC&#62;</b> </p>
+                    <p class="text-center">You can automate this process by setting up a DHCP server.</p>
+                </div>
+            </div>
+      </div>
+      <div class="col-md-3"></div>
+    </div>
+  </div>
+
+  <form action="/update/target" method="POST" id="systems" class="hide">
+    <div class="form-group">
+      <label for="mac">Select a server</label>
+      <select required id="mac" name="mac"  class="form-control" size=5>
+          {{ range .HostnameMaps }}
+          <option value="{{ .Hostname.String }}">{{ .Hostname.String }}</option>
+          {{ end }}
+      </select>
+    </div>
+    <div class="form-group">
+        <select required id="target" name="target"  class="form-control">
+            <option value="">Select an iPXE script</option>
+            {{ range .Scripts }}
+            <option value="{{ .Name }}" data-script="{{ .Name }}" data-env="{{ .Env }}">{{ .Name }}{{ if .Env }} [{{ .Env }}]{{end}}</option>
+            {{ end }}
+          </select>
+    </div>
+    <div class="form-group form-row params-container">
+      <!-- filled by JQ code -->
+    </div>
+    <input class="btn btn-primary" type="submit" value="Boot!"/>
+  </form>
+</div>
+
+{{ end }}

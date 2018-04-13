@@ -1,0 +1,14 @@
+{{define "example.preseed" -}}
+
+d-i partman-auto-raid/recipe string \
+    1 4 0 ext3 /boot \
+        /dev/sda1#/dev/sdb1#/dev/sdc1#/dev/sdd1 \
+    . \
+    10 4 0 lvm - \
+        /dev/sda5#/dev/sdb5#/dev/sdc5#/dev/sdd5 \
+    .
+
+d-i partman-auto/disk string /dev/sda /dev/sdb /dev/sdc /dev/sdd
+d-i grub-installer/bootdev string /dev/sda /dev/sdb /dev/sdc /dev/sdd
+
+{{end}}

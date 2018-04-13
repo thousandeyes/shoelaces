@@ -1,0 +1,40 @@
+{{ define "mappings" }}
+
+<div class="col-md-12">
+      {{ if .NetworkMaps }}
+          <div class="card card-default">
+            <!-- Default card contents -->
+            <div class="card-header">Network Mappings</div>
+            <table class="table">
+              <tr>
+                <th>Subnet</th>
+                <th>IPXE script to use</th>
+              </tr>
+
+              {{ range .NetworkMaps }}
+              <tr>
+                <td>{{ .Network }}</td>
+                <td>{{ .Script.String }}</td>
+              </tr>
+              {{ end }}
+            </table>
+          </div>
+          <div class="card card-default">
+            <!-- Default card contents -->
+            <div class="card-header">Hostname Mappings</div>
+            <table class="table">
+              <tr>
+                <th>Hostname</th>
+                <th>IPXE script to use</th>
+              </tr>
+              {{ range .HostnameMaps }}
+              <tr>
+                <td><code>/{{ .Hostname.String }}/</code></td>
+                <td>{{ .Script.String }}</td>
+              </tr>
+              {{ end }}
+            </table>
+          </div>
+      {{ end }}
+</div>
+{{ end }}

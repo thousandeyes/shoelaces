@@ -1,0 +1,15 @@
+{{define "linux.cfg" -}}
+#!ipxe
+
+# We set VGA to normal and nomodeset because often the framebuffers
+# are extraordinarily slow.
+
+# Two serial interfaces enabled, hopefully one for local and one for remote
+# on Dells with iDRAC/iKVM (serial over lan).
+
+# libata.force=noncq for https://bbs.archlinux.org/viewtopic.php?id=196267
+# We probably want ncq for harddrives, but we don't have many of those.
+# queued trim is broken with our 850PRO/Linux combo, or maybe entirely on the Samsung 850 PRO SSDs
+
+set linuxargs hostname={{.hostname}} console=tty0 console=ttyS0,115200n8 console=ttyS1,115200n8 vga=normal biosdevname=0 nomodeset interface=auto libata.force=noncq consoleblank=0
+{{end}}

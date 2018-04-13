@@ -1,0 +1,4 @@
+#!/bin/sh
+
+/usr/local/sbin/bootstrap > /var/log/bootstrap.log 2>&1 &
+exit 0

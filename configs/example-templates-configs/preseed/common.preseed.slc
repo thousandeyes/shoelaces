@@ -1,0 +1,12 @@
+{{define "common.preseed"}}
+d-i auto-install/enable boolean true
+d-i debian-installer/locale string en_US
+d-i console-setup/ask_detect boolean false
+
+d-i user-setup/allow-password-weak boolean true
+d-i passwd/root-login boolean true
+d-i passwd/make-user boolean false
+
+d-i passwd/root-password password password
+d-i passwd/root-password-again password password
+{{end}}

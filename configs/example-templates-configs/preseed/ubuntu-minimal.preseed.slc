@@ -1,0 +1,36 @@
+{{define "ubuntu-minimal.preseed" -}}
+{{template "common.preseed"}}
+
+d-i partman-auto/method string regular
+d-i partman-lvm/device_remove_lvm boolean true
+d-i partman-md/device_remove_md boolean true
+d-i partman-lvm/confirm boolean true
+d-i partman-lvm/confirm_nooverwrite boolean true
+
+# atomic: Just one partition
+d-i partman-auto/choose_recipe select atomic
+
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+
+d-i user-setup/encrypt-home boolean false
+
+d-i base-installer/install-recommends boolean true
+
+d-i clock-setup/utc boolean true
+d-i time/zone string America/Los_Angeles
+
+d-i clock-setup/ntp boolean true
+
+d-i debian-installer/quiet boolean false
+d-i debian-installer/splash boolean false
+
+d-i pkgsel/update-policy select unattended-upgrades
+
+d-i grub-installer/timeout string 5
+d-i popularity-contest/participate boolean false
+
+d-i finish-install/reboot_in_progress note
+{{end}}

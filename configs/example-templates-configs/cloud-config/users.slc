@@ -1,0 +1,11 @@
+{{define "cloudconfig-coreos-users"}}
+users:
+  - name: "shoelaces"
+    groups:
+      - "sudo"
+      - "docker"
+    ssh-authorized-keys:
+      - "ssh-rsa fake-key shoelaces@example.com"
+ssh_authorized_keys:
+  - "ssh-rsa fake-key shoelaces@example.com"
+{{end}}

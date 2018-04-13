@@ -1,0 +1,16 @@
+{{define "coreos.ipxe" -}}
+#!ipxe
+
+set coreos-url http://stable.release.core-os.net/amd64-usr/{{.version}}
+
+echo This will currently autologin into tty1 on the console.
+echo From there you can su to root and install CoreOS to disk using:
+echo coreos-install -d /dev/sda -C stable
+echo You will probably need to chroot into /dev/sda9 to configure accounts.
+echo More info @ http://coreos.com/docs/running-coreos/bare-metal/installing-to-disk/
+
+kernel ${coreos-url}/coreos_production_pxe.vmlinuz cloud-config-url=http://{{.baseURL}}/configs/coreos-{{.cloudconfig}}.yaml?release=stable&hostname={{.hostname}} console=tty1 coreos.autologin=tty1
+initrd ${coreos-url}/coreos_production_pxe_image.cpio.gz
+
+boot
+{{end}}

@@ -1,0 +1,17 @@
+networkMaps:
+  - network: 192.168.0.0/24
+    script:
+      name: ubuntu-minimal.ipxe
+      params:
+        release: xenial
+  - network: 10.0.10.0/24
+    script:
+      name: coreos.ipxe
+      params:
+        release: stable
+hostnameMaps:
+  - hostname: msc1.example.com
+    script:
+      name: ubuntu-minimal.ipxe
+      params:
+        release: trusty

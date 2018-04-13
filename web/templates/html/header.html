@@ -1,0 +1,46 @@
+{{ define "header" }}
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <!-- Latest compiled and minified CSS -->
+        <title>shoelaces - painless server bootstrapping</title>
+
+        <script src="/static/js/jquery.min.js"></script>
+        <script src="/static/js/bootstrap.min.js"></script>
+        <script src="/static/js/local.js"></script>
+
+        <link href="static/css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="static/css/default.css" rel="stylesheet"/>
+        <link href="static/css/spinner.css" rel="stylesheet"/>
+
+        <link rel="icon" type="image/png" href="static/img/favicon-32x32.png"/>
+        <meta charset="utf-8"/>
+    </head>
+    <body>
+        <header>
+            <nav class="navbar navbar-expand-lg rounded fixed-top">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample10" aria-controls="navbarsExample10" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse justify-content-md-center" id="navbarsExample10">
+                    <a class="navbar-brand" href="/"><img src="static/img/shoelaces-logo.png" alt="shoelaces-logo" /></a>
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/mappings">Mappings</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/events">Events</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+
+        <div class="container main-container">
+            <div id="main" role="main">
+
+{{ end }}

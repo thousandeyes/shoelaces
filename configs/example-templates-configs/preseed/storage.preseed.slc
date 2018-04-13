@@ -1,0 +1,104 @@
+{{define "storage.preseed" -}}
+{{template "common.preseed"}}
+
+# The method should be set to "raid".
+d-i     partman-auto/method string raid
+# Specify the disks to be partitioned. They will all get the same layout,
+# so this will only work if the disks are the same size.
+d-i     partman-auto/disk string /dev/sda /dev/sdb
+
+d-i     partman-lvm/device_remove_lvm boolean true
+d-i partman-lvm/device_remove_lvm_span boolean true
+d-i partman-auto/purge_lvm_from_device boolean true
+d-i     partman-md/device_remove_md boolean true
+d-i     partman-lvm/confirm boolean true
+d-i     partman-auto-lvm/new_vg_name string vg0
+
+# Next you need to specify the physical partitions that will be used.
+d-i partman-auto/expert_recipe string           \
+    multiraid ::                    \
+        256 512 1024 raid            \
+            $lvmignore{ }           \
+            $primary{ }         \
+            method{ raid }          \
+            raidid{ 1 }         \
+        .                   \
+        4000 4096 -1 raid           \
+            $lvmignore{ }           \
+            method{ raid }          \
+            raidid{ 2 }         \
+        .                   \
+        2000 4096 50000 ext4           \
+            $defaultignore{ }       \
+            $lvmok{ }           \
+            method{ format }        \
+            format{ }           \
+            use_filesystem{ }       \
+            filesystem{ ext4 }      \
+            mountpoint{ / }         \
+            lv_name{ root }      \
+		options/noatime{ noatime }              \
+		options/nodiratime{ nodiratime }        \
+		options/discard{ discard }              \
+        .                   \
+        100% 512 100% linux-swap         \
+            $defaultignore{ }       \
+            $lvmok{ }           \
+            method{ swap }          \
+            format{ }           \
+            lv_name{ swap }      \
+        .
+
+
+# Last you need to specify how the previously defined partitions will be
+# used in the RAID setup. Remember to use the correct partition numbers
+# for logical partitions. RAID levels 0, 1, 5, 6 and 10 are supported;
+# devices are separated using "#".
+# Parameters are:
+# <raidtype> <devcount> <sparecount> <fstype> <mountpoint> \
+#          <devices> <sparedevices>
+
+d-i partman-auto-raid/recipe string         \
+    1 2 0 ext3 /boot                \
+        raidid=1                \
+    .                       \
+    1 2 0 lvm -                 \
+        raidid=2                \
+    .
+
+
+
+d-i     mdadm/boot_degraded boolean true
+d-i     partman-md/confirm boolean true
+d-i     partman-partitioning/confirm_write_new_label boolean true
+d-i     partman/choose_partition select Finish partitioning and write changes to disk
+d-i     partman/confirm boolean true
+d-i     partman-md/confirm_nooverwrite  boolean true
+d-i     partman/confirm_nooverwrite boolean true
+
+d-i user-setup/encrypt-home boolean false
+
+d-i base-installer/install-recommends boolean false
+
+d-i clock-setup/utc boolean true
+d-i time/zone string UTC
+
+d-i clock-setup/ntp boolean true
+
+d-i debian-installer/quiet boolean false
+d-i debian-installer/splash boolean false
+
+##This should be set by Puppet instead.
+d-i pkgsel/update-policy select none
+##
+
+d-i grub-installer/timeout string 5
+d-i popularity-contest/participate boolean false
+
+
+d-i finish-install/keep-consoles boolean true
+d-i finish-install/reboot_in_progress note
+
+# This just halts, we want a reboot.
+#d-i debian-installer/exit/poweroff boolean true
+{{end}}
