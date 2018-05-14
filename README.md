@@ -18,10 +18,21 @@ a few other things to make it easier to manage your server deployments:
 
 ## How it works
 
+As soon as Shoelaces starts, the service will be patiently waiting for servers
+to boot. If no servers are detected, you'll simply see a spinner in the web UI,
+as can be seen in the screenshot.
+
+![Shoelaces frontend - Waiting for hosts](shoelaces-frontend-1.png)
+
+The URL `localhost:8081` will actually point to wherever you are running your
+Shoelaces instance. It must be reachable by the booting hosts.
+
+The following picture shows a high level overview of how a server notifies
+Shoelaces that it's ready for booting.
+
 ![Shoelaces overview](shoelaces-overview.png)
 
-The previous figure shows a high level overview of how a server contacts
-Shoelaces. We can see that as soon as the server boots using network boot, we
+In this graph we can see that as soon as the server boots using network boot, we
 instruct the machine to switch to an [iPXE](https://ipxe.org/) ROM. We do this
 because we need to be able to make HTTP requests to Shoelaces, and regular
 [PXE](https://en.wikipedia.org/wiki/Preboot_Execution_Environment) does not
@@ -36,6 +47,22 @@ DHCP request. Finally, the server will detect that the request comes from an
 iPXE ROM, allowing it to respond with an HTTP URL. This URL, as you may have
 guessed, will be pointing to Shoelaces.
 
+If there was no automated installation configured for the booting server, you'll
+be able to select an option to bootstrap it in the Shoelaces UI.
+
+![Shoelaces frontend - Host detected](shoelaces-frontend-2.png)
+
+A couple of things can be said about this screenshot:
+
+* When you select a task, a bunch of input boxes for filling with parameters
+  will appear (in the picture, they are *release* and *hostname*). The
+  parameters to complete will be dynamically loaded from the chosen task
+  template.
+
+* Hosts send their MAC address when they contact Shoelaces. From the HTTP
+  request Shoelaces will extract the source IP and perform a reverse DNS lookup.
+  If the DNS query is successful, the resolved hostname will be shown in the web
+  UI. If no hostname was resolved, Shoelaces will show just the MAC and the IP.
 
 ## Setting up
 
