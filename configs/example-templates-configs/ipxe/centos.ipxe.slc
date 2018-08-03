@@ -8,7 +8,7 @@ echo This automatically overwrites data!
 echo CentOS ${release}
 echo Installing ${hostname}
 
-kernel ${base}/images/pxeboot/vmlinuz initrd=initrd.img repo=${base} ks=http://{{.baseURL}}/configs/centos.ks?hostname=
+kernel ${base}/images/pxeboot/vmlinuz initrd=initrd.img repo=${base} ks=http://{{.baseURL}}/configs/centos.ks?hostname=$hostname&release=$release
 initrd ${base}/images/pxeboot/initrd.img
 boot
 {{end}}
