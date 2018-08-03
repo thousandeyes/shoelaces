@@ -1,0 +1,36 @@
+{{define "centos.ks" -}}
+logging --level=info
+cmdline
+
+url  --url="http://mirror.netcologne.de/centos/{{.release}}/os/x86_64"
+
+network --bootproto dhcp --hostname {{.hostname}}
+
+rootpw root
+auth   --useshadow --passalgo=sha512 --enablefingerprint
+
+keyboard --vckeymap=de --xlayouts='de (nodeadkeys)'
+lang      en_US.UTF-8
+timezone Europe/Berlin --isUtc
+zerombr
+clearpart --drives=sda --all --disklabel=gpt
+bootloader --append="crashkernel=auto panic=60" --location=mbr
+part biosboot --fstype=biosboot --size=1
+part /boot --fstype="ext4" --ondisk=sda --size=500 --label=/boot
+part swap --fstype="swap" --ondisk=sda --size=8000
+part pv.01 --size=1000 --grow --ondisk=sda
+volgroup vg0 pv.01
+logvol / --fstype="ext4" --vgname=vg0 --size=10000 --name=lv_root --grow
+
+%packages
+@core
+%end
+
+%post
+#!/bin/bash
+hostnamectl set-hostname {{.hostname}}
+echo -e "\n#######################\n # Finished Post Tasks\n#######################\n"
+sleep 5
+%end
+reboot
+{{end}}
