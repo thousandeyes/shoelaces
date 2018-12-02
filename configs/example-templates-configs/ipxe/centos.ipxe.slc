@@ -1,14 +1,14 @@
 {{define "centos.ipxe" -}}
 #!ipxe
 set hostname {{.hostname}}
-set release {{.release}}  
+set release {{.release}}
 set base http://mirror.centos.org/centos/${release}/os/x86_64
 
 echo This automatically overwrites data!
 echo CentOS ${release}
 echo Installing ${hostname}
 
-kernel ${base}/images/pxeboot/vmlinuz initrd=initrd.img repo=${base} ks=http://{{.baseURL}}/configs/centos.ks?hostname=$hostname&release=$release
+kernel ${base}/images/pxeboot/vmlinuz initrd=initrd.img repo=${base} ks=http://{{.baseURL}}/configs/centos.ks?hostname=${hostname}&release=${release}
 initrd ${base}/images/pxeboot/initrd.img
 boot
 {{end}}
