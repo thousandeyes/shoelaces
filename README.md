@@ -67,6 +67,7 @@ A couple of things can be said about this screenshot:
 ## Setting up
 
 ### Building Shoelaces
+
 At the moment a binary package is not provided. The only way of running
 Shoelaces is to compile it from source. Refer to the Go Programming
 Language [Getting Started](https://golang.org/doc/install) guide to learn
@@ -80,6 +81,7 @@ running:
     $ go build
 
 ### Running Shoelaces
+
 You can quickly try Shoelaces after compiling it by using the example configuration file:
 
     ./shoelaces -config configs/shoelaces.conf
@@ -87,6 +89,7 @@ You can quickly try Shoelaces after compiling it by using the example configurat
 Head to [localhost:8081](http://localhost:8081) to checkout Shoelaces' frontend.
 
 ### Shoelaces configuration file
+
 Shoelaces accepts several parameters:
 
 * `config`: the path to a configuration file.
@@ -134,7 +137,7 @@ to boot using HTTPS.
 Drop this config in your **ISC DHCP** server, replacing the relevant sections
 with your TFTP and Shoelaces server addresses.
 
-```
+```txt
 # dhcp.conf
 next-server <your-tftp-server>;
 if exists user-class and option user-class = "iPXE" {
@@ -144,13 +147,21 @@ if exists user-class and option user-class = "iPXE" {
 }
 ```
 
+For **dnsmasq** (v2.53 or above) you can add this to its existing config, e.g. by
+putting it in `dnsmasq.d/ipxe.conf`:
+
+```txt
+dhcp-match=set:ipxe,175 # iPXE sends a 175 option.
+dhcp-boot=tag:!ipxe,undionly.kpxe
+dhcp-boot=http://<shoelaces-server>/poll/1/${netX/mac:hexhyp}
+```
+
 The **${netX/mac:hexhyp}** strings represents the MAC address of the booting
 host. iPXE will be in charge of replacing that string for the actual value.
 
 *Note*: In case you are using a DHCP server that does not have this level of
 flexibility for configuring it, you can always re-compile the iPXE ROM for
 [breaking the loop](https://ipxe.org/howto/chainloading#breaking_the_loop_with_an_embedded_script).
-
 
 ## Script discoverability
 
@@ -173,7 +184,8 @@ file](configs/example-templates-configs/mappings.yaml) for more information.
 
 Shoelaces supports the notion of environments a.k.a. *env overrides*.
 Consider the following `data-dir` directory structure:
-```
+
+```txt
 ├── cloud-config
 │   └── coreos-cloud-config.yaml.slc
 ├── env_overrides
@@ -202,7 +214,6 @@ The way this works, considering that **Shoelaces** is mostly stateless, is by
 setting different `baseURL` depending on the environment set. Normal requests
 would get `baseURL` set to `http://$shoelaces_host:$port` while an environment
 request will have `http://$shoelaces_host:$port/env/$environment_name/`
-
 
 *CORNER CASES*: It is not possible to boot a host in a non default environment
 unless there is a main iPXE script in the respective override directory. This
