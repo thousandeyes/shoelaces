@@ -95,7 +95,7 @@ Shoelaces accepts several parameters:
 * `config`: the path to a configuration file.
 * `data-dir`: the path to the root directory with the templates. It's advised to
   manage the templates in a VCS, such as a git repository. Refer to the [example
-  data directory](configs/example-templates-configs/) for more information.
+  data directory](configs/data-dir/) for more information.
 * `debug`: enable debug messages.
 * `domain`: the domain Shoelaces is going to be listening on.
 * `mappings-file`: the path to the YAML mappings file, relative to the `data-dir` parameter.
@@ -178,7 +178,7 @@ that.
 
 Shoelaces will read these mappings from a YAML file that can be passed as a
 program parameter. Refer to the [example mappings
-file](configs/example-templates-configs/mappings.yaml) for more information.
+file](configs/data-dir/mappings.yaml) for more information.
 
 ## Environments
 
