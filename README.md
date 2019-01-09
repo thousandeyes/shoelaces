@@ -22,7 +22,7 @@ As soon as Shoelaces starts, the service will be patiently waiting for servers
 to boot. If no servers are detected, you'll simply see a spinner in the web UI,
 as can be seen in the screenshot.
 
-![Shoelaces frontend - Waiting for hosts](shoelaces-frontend-1.png)
+![Shoelaces frontend - Waiting for hosts](docs/screenshots/shoelaces-frontend-1.png)
 
 The URL `localhost:8081` will actually point to wherever you are running your
 Shoelaces instance. It must be reachable by the booting hosts.
@@ -30,7 +30,7 @@ Shoelaces instance. It must be reachable by the booting hosts.
 The following picture shows a high level overview of how a server notifies
 Shoelaces that it's ready for booting.
 
-![Shoelaces overview](shoelaces-overview.png)
+![Shoelaces overview](docs/screenshots/shoelaces-overview.png)
 
 In this graph we can see that as soon as the server boots using network boot, we
 instruct the machine to switch to an [iPXE](https://ipxe.org/) ROM. We do this
@@ -50,7 +50,7 @@ guessed, will be pointing to Shoelaces.
 If there was no automated installation configured for the booting server, you'll
 be able to select an option to bootstrap it in the Shoelaces UI.
 
-![Shoelaces frontend - Host detected](shoelaces-frontend-2.png)
+![Shoelaces frontend - Host detected](docs/screenshots/shoelaces-frontend-2.png)
 
 A couple of things can be said about this screenshot:
 
@@ -95,7 +95,7 @@ Shoelaces accepts several parameters:
 * `config`: the path to a configuration file.
 * `data-dir`: the path to the root directory with the templates. It's advised to
   manage the templates in a VCS, such as a git repository. Refer to the [example
-  data directory](configs/example-templates-configs/) for more information.
+  data directory](configs/data-dir/) for more information.
 * `debug`: enable debug messages.
 * `domain`: the domain Shoelaces is going to be listening on.
 * `mappings-file`: the path to the YAML mappings file, relative to the `data-dir` parameter.
@@ -178,7 +178,7 @@ that.
 
 Shoelaces will read these mappings from a YAML file that can be passed as a
 program parameter. Refer to the [example mappings
-file](configs/example-templates-configs/mappings.yaml) for more information.
+file](configs/data-dir/mappings.yaml) for more information.
 
 ## Environments
 
