@@ -29,3 +29,6 @@ _testmain.go
 shoelaces
 config.yaml
 *.deb
+
+# auto-generated manpage
+docs/shoelaces.8
