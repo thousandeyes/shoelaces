@@ -23,7 +23,7 @@ test: fmt
 
 .PHONY: all clean docs
 
-binarys: linux windows
+binaries: linux windows
 linux:
 		GOOS=linux ${GO} build -o bin/shoelaces -ldflags "-s -w"
 windows:
