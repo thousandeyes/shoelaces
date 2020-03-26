@@ -22,3 +22,9 @@ test: fmt
 			./test/integ-test/integ_test.py
 
 .PHONY: all clean docs
+
+binarys: linux windows
+linux:
+		GOOS=linux ${GO} build -o bin/shoelaces -ldflags "-s -w"
+windows:
+		GOOS=windows ${GO} build -o bin/shoelaces.exe -ldflags "-s -w"
