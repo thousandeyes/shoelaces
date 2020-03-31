@@ -1,5 +1,6 @@
 GO = go
 SCDOC = scdoc
+LDFLAGS = "-s -w"
 
 pkgs = $(shell $(GO) list ./... | grep -v /vendor/)
 
@@ -22,3 +23,9 @@ test: fmt
 			./test/integ-test/integ_test.py
 
 .PHONY: all clean docs
+
+binaries: linux windows
+linux:
+		GOOS=linux ${GO} build -o bin/shoelaces -ldflags ${LDFLAGS}
+windows:
+		GOOS=windows ${GO} build -o bin/shoelaces.exe -ldflags ${LDFLAGS}
