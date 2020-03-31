@@ -24,11 +24,8 @@ test: fmt
 
 .PHONY: all clean docs
 
-
 binaries: linux windows
 linux:
-		GOOS=linux ${GO} build -o bin/shoelaces --ldflag "${LDFLAG}"
+		GOOS=linux ${GO} build -o bin/shoelaces -ldflags ${LDFLAG}
 windows:
-		GOOS=windows ${GO} build -o bin/shoelaces.exe --ldflag "${LDFLAG}"
-
-	
+		GOOS=windows ${GO} build -o bin/shoelaces.exe -ldflags ${LDFLAG}
