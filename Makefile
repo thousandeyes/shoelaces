@@ -1,6 +1,6 @@
 GO = go
 SCDOC = scdoc
-LDFLAG = "-ldflags \"-s -w\" "
+LDFLAG = "-s -w"
 
 pkgs = $(shell $(GO) list ./... | grep -v /vendor/)
 
@@ -27,7 +27,8 @@ test: fmt
 
 binaries: linux windows
 linux:
-		GOOS=linux ${GO} build -o bin/shoelaces ${LDFLAG}
+		GOOS=linux ${GO} build -o bin/shoelaces --ldflag "${LDFLAG}"
 windows:
-		GOOS=windows ${GO} build -o bin/shoelaces.exe ${LDFLAG}
+		GOOS=windows ${GO} build -o bin/shoelaces.exe --ldflag "${LDFLAG}"
+
 	
