@@ -10,7 +10,7 @@ chain --autofree http://{{.baseURL}}/configs/linux.cfg?hostname={{.hostname}}
 
 imgfree
 
-kernel ${mirror}/linux auto=true priority=critical initrd=initrd.gz preseed/url=http://{{.baseURL}}/configs/storage.preseed ${linuxargs}
+kernel ${mirror}/linux auto=true priority=critical initrd=initrd.gz preseed/url=http://{{.baseURL}}/configs/preseeds/storage ${linuxargs}
 initrd ${mirror}/initrd.gz
 boot
 {{end}}
