@@ -10,7 +10,7 @@ chain http://{{.baseURL}}/configs/linux.cfg?hostname={{.hostname}}
 
 imgfree
 
-kernel ${mirror}/linux auto=true priority=critical initrd=initrd.gz keyboard-configuration/xkb-keymap=us preseed/url=http://{{.baseURL}}/configs/debian.preseed ${linuxargs}
+kernel ${mirror}/linux auto=true priority=critical initrd=initrd.gz keyboard-configuration/xkb-keymap=us preseed/url=http://{{.baseURL}}/configs/preseeds/debian?encrypt_home={{.encrypt_home}} ${linuxargs}
 initrd ${mirror}/initrd.gz
 boot
 {{end}}

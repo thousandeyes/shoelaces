@@ -18,16 +18,19 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"path/filepath"
 
-	"github.com/gorilla/mux"
 	"github.com/thousandeyes/shoelaces/internal/utils"
 )
 
+// TemplateHandler handles templated config files
+type TemplateHandler struct{}
+
 // TemplateHandler is the dynamic configuration provider endpoint. It
 // receives a key and maybe an environment.
-func TemplateHandler(w http.ResponseWriter, r *http.Request) {
+func (t *TemplateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	variablesMap := map[string]interface{}{}
-	configName := mux.Vars(r)["key"]
+	configName := filepath.Clean(r.URL.Path)
 
 	if configName == "" {
 		http.Error(w, "No template name provided", http.StatusNotFound)
@@ -48,6 +51,11 @@ func TemplateHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		io.WriteString(w, configString)
 	}
+}
+
+// TemplateHandler returns a TemplateHandler instance implementing http.Handler
+func TemplateServer() *TemplateHandler {
+	return &TemplateHandler{}
 }
 
 // GetTemplateParams receives a script name and returns the parameters

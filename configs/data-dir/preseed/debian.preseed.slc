@@ -1,5 +1,5 @@
-{{define "debian.preseed" -}}
-{{template "common.preseed"}}
+{{define "preseeds/debian" -}}
+{{template "preseeds/common"}}
 
 d-i partman-auto/method string regular
 d-i partman-lvm/device_remove_lvm boolean true
@@ -15,7 +15,7 @@ d-i partman/choose_partition select finish
 d-i partman/confirm boolean true
 d-i partman/confirm_nooverwrite boolean true
 
-d-i user-setup/encrypt-home boolean false
+d-i user-setup/encrypt-home boolean {{.encrypt_home}}
 
 d-i base-installer/install-recommends boolean true
 

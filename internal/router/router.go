@@ -48,8 +48,10 @@ func ShoelacesRouter(env *environment.Environment) http.Handler {
 	// Static configuration files endpoint
 	r.PathPrefix("/configs/static/").Handler(http.StripPrefix("/configs/static/",
 		handlers.StaticConfigFileServer()))
+
 	// Dynamic configuration endpoint
-	r.HandleFunc("/configs/{key}", handlers.TemplateHandler).Methods("GET")
+	r.PathPrefix("/configs/").Handler(http.StripPrefix("/configs/",
+		handlers.TemplateServer()))
 
 	// Called by iPXE boot agents, returns boot script specified on the configuration
 	// or if the host is unknown makes it retry for a while until the user specifies
