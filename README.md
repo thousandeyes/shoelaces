@@ -230,8 +230,3 @@ guidelines:
   a bug or, even better, contribute with a pull request.
 * We have a bunch of integration tests that can be run by executing `make test`.
   Ensure that all test pass before submitting your pull request.
-* We are using [dep](https://golang.github.io/dep/) for managing the
-  dependencies of this project. If your contribution adds a new dependency (not
-  recommended, but sometimes there isn't other way), please update dep files and
-  vendor directory
-  [accordingly](https://golang.github.io/dep/docs/daily-dep.html#adding-a-new-dependency).
