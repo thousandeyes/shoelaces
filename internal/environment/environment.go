@@ -35,7 +35,6 @@ import (
 // Environment struct holds the shoelaces instance global data.
 type Environment struct {
 	ConfigFile      string
-	BaseURL         string
 	HostnameMaps    []mappings.HostnameMap
 	NetworkMaps     []mappings.NetworkMap
 	ServerStates    *server.States
@@ -46,8 +45,8 @@ type Environment struct {
 	Environments    []string                      // Valid config environments
 	Logger          log.Logger
 
-	Port              int
-	Domain            string
+	BindAddr          string
+	BaseURL           string
 	DataDir           string
 	StaticDir         string
 	EnvDir            string
@@ -66,7 +65,10 @@ func New() *Environment {
 		env.Logger = log.AllowDebug(env.Logger)
 	}
 
-	env.BaseURL = fmt.Sprintf("%s:%d", env.Domain, env.Port)
+	if env.BaseURL == "" {
+		env.BaseURL = env.BindAddr
+	}
+
 	env.Environments = env.initEnvOverrides()
 
 	env.EventLog = &event.Log{}

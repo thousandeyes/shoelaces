@@ -10,6 +10,15 @@ shoelaces - automated server bootstrapping
 
 # OPTIONS
 
+*-base-url* <string>
+	Optional parameter. Specifies the base address that will be used when
+	generating URLs.
+	If it's not specified, the value of "-bind-addr" will be used.
+
+*-bind-addr* <host:port>
+	The address where Shoelaces will listen for requests. Defaults to
+	"localhost:8081".
+
 *-config* <config>
 	Specifies a config file. All the following options can be specified in
 	the config.
@@ -20,10 +29,6 @@ shoelaces - automated server bootstrapping
 *-debug*
 	Enables debug mode.
 
-*-domain* <hostname>
-	Specifies the address where the server is going to listen.
-	Defaults to "localhost".
-
 *-env-dir* <directory>
 	Specifies a directory with environment overrides. Refer to the README of
 	the project for more information about environment overrides.
@@ -31,10 +36,6 @@ shoelaces - automated server bootstrapping
 *-mappings-file* <file>
 	Specifies a mappings YAML file. Defaults to "mappings.yaml". Refer to the
 	README of the project for more information about mappings.
-
-*-port* <port>
-	Specifies the port where the server is going to listen.
-	Defaults to 8080.
 
 *-static-dir* <directory>
 	Specifies a custom web directory with static files. Defaults to "web".
@@ -73,8 +74,7 @@ specified.
 Here is example config file:
 
 ```
-port=8081
-domain=localhost
+bind-addr=localhost:8081
 data-dir=/etc/shoelaces/data-dir/
 template-extension=.slc
 mappings-file=mappings.yaml

@@ -13,7 +13,9 @@ COPY --from=build /tmp/shoelaces /shoelaces
 WORKDIR /data
 COPY --from=build /tmp/mappings.yaml mappings.yaml
 COPY --from=build /shoelaces/web /web
-ENV DOMAIN=0.0.0.0
-ENV PORT=8081
+
+ENV BIND_ADDR=0.0.0.0:8081
+EXPOSE 8081
+
 ENTRYPOINT ["/shoelaces"]
 CMD ["-data-dir", "/data", "-static-dir", "/web"]
