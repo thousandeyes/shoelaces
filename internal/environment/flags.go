@@ -23,8 +23,8 @@ import (
 
 func (env *Environment) setFlags() {
 	flag.StringVar(&env.ConfigFile, "config", "", "My config file")
-	flag.IntVar(&env.Port, "port", 8080, "The port where I'm going to listen")
-	flag.StringVar(&env.Domain, "domain", "localhost", "The address where I'm going to listen")
+	flag.StringVar(&env.BindAddr, "bind-addr", "localhost:8081", "The address where I'm going to listen")
+	flag.StringVar(&env.BaseURL, "base-url", "", "The base shoelaces URL. If it's not defined, it will default to bind-addr.")
 	flag.StringVar(&env.DataDir, "data-dir", "", "Directory with mappings, configs, templates, etc.")
 	flag.StringVar(&env.StaticDir, "static-dir", "web", "A custom web directory with static files")
 	flag.StringVar(&env.EnvDir, "env-dir", "env_overrides", "Directory with overrides")

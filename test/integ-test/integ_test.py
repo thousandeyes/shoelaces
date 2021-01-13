@@ -29,9 +29,8 @@ import datetime
 import dateutil.parser
 from requests.exceptions import RequestException
 
-API_HOST = 'localhost'
-API_PORT = '18888'
-API_URL = "http://{}:{}".format(API_HOST, API_PORT)
+API_ADDR = 'localhost:18888'
+API_URL = "http://{}".format(API_ADDR)
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.dirname(os.path.dirname(TEST_DIR))
 FIXTURE_DIR = os.path.join(TEST_DIR, 'expected-results')
@@ -49,15 +48,13 @@ def shoelaces_binary():
 @pytest.fixture(scope="session", autouse=True)
 def config_file(shoelaces_binary):
     """ Create a temporary config file """
-    temp_config_tpl = string.Template("domain=$host\n"
-                                      "port=$port\n"
+    temp_config_tpl = string.Template("bind-addr=$bind_addr\n"
                                       "data-dir=integ-test-configs\n"
                                       "static-dir=$static_dir\n"
                                       "template-extension=.slc\n"
                                       "mappings-file=mappings.yaml\n"
                                       "debug=true\n")
-    temp_config = temp_config_tpl.substitute(host=API_HOST,
-                                             port=API_PORT,
+    temp_config = temp_config_tpl.substitute(bind_addr=API_ADDR,
                                              static_dir=STATIC_DIR)
 
     sys.stderr.write("Using:\n{}".format(temp_config))
