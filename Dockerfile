@@ -17,5 +17,5 @@ COPY --from=build /shoelaces/web /web
 ENV BIND_ADDR=0.0.0.0:8081
 EXPOSE 8081
 
-ENTRYPOINT ["/shoelaces"]
-CMD ["-data-dir", "/data", "-static-dir", "/web"]
+ENTRYPOINT ["/shoelaces", "-data-dir", "/data", "-static-dir", "/web"]
+CMD []
