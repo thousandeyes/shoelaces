@@ -103,7 +103,7 @@ dhcp-boot=tag:!ipxe,undionly.kpxe
 dhcp-boot=http://<shoelaces-server>/poll/1/${netX/mac:hexhyp}
 ```
 
-A TFTP server such as *tftpd*(8) must be configured to serve the IPXE ROM,
+A TFTP server such as *tftpd*(8) must be configured to serve the iPXE executable,
 *undionly.kpxe*.
 
 # SEE ALSO
