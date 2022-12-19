@@ -33,18 +33,18 @@ Shoelaces that it's ready for booting.
 ![Shoelaces overview](docs/screenshots/shoelaces-overview.png)
 
 In this graph we can see that as soon as the server boots using network boot, we
-instruct the machine to switch to an [iPXE](https://ipxe.org/) ROM. We do this
+instruct the machine to switch to an [iPXE](https://ipxe.org/) executable. We do this
 because we need to be able to make HTTP requests to Shoelaces, and regular
 [PXE](https://en.wikipedia.org/wiki/Preboot_Execution_Environment) does not
 support that protocol.
 
 So, when a server boots, the
 [DHCP](https://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol) server
-will instruct it to retrieve an iPXE ROM from a
+will instruct it to retrieve an iPXE executable from a
 [TFTP](https://en.wikipedia.org/wiki/Trivial_File_Transfer_Protocol) server.
-When the host receives the iPXE ROM, it will chainload into it and trigger a new
+When the host receives the iPXE executable, it will chainload into it and trigger a new
 DHCP request. Finally, the server will detect that the request comes from an
-iPXE ROM, allowing it to respond with an HTTP URL. This URL, as you may have
+iPXE executable, allowing it to respond with an HTTP URL. This URL, as you may have
 guessed, will be pointing to Shoelaces.
 
 If there was no automated installation configured for the booting server, you'll
@@ -127,7 +127,7 @@ The TFTP server is only used to chainload the iPXE boot loader, so setting it up
 in `read-only` mode is sufficient. The loader we use (`undionly.kpxe`) can be
 downloaded from the [ipxe.org](http://ipxe.org/howto/chainloading) website.
 
-It is also possible to compile your own iPXE ROM in order to customize the
+It is also possible to compile your own iPXE executable in order to customize the
 booting of your servers. For example, it's useful to [add your own SSL
 certificates](http://ipxe.org/crypto#trusted_root_certificates) in case you want
 to boot using HTTPS.
@@ -160,7 +160,7 @@ The **${netX/mac:hexhyp}** strings represents the MAC address of the booting
 host. iPXE will be in charge of replacing that string for the actual value.
 
 *Note*: In case you are using a DHCP server that does not have this level of
-flexibility for configuring it, you can always re-compile the iPXE ROM for
+flexibility for configuring it, you can always re-compile the iPXE executable for
 [breaking the loop](https://ipxe.org/howto/chainloading#breaking_the_loop_with_an_embedded_script).
 
 ## Script discoverability
