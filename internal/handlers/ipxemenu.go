@@ -23,7 +23,6 @@ import (
 )
 
 const menuHeader = "#!ipxe\n" +
-	"chain /poll/1/${netX/mac:hexhyp}\n" +
 	"menu Choose target to boot\n"
 
 const menuFooter = "\n" +
