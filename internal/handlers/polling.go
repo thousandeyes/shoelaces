@@ -28,6 +28,16 @@ import (
 	"github.com/thousandeyes/shoelaces/internal/utils"
 )
 
+// StartPollingHandler is called by iPXE boot agents. It returns the poll script.
+func StartPollingHandler(w http.ResponseWriter, r *http.Request) {
+	env := envFromRequest(r)
+
+	script := polling.GenStartScript(env.Logger,  env.BaseURL)
+
+	w.Write([]byte(script))
+}
+
+
 // PollHandler is called by iPXE boot agents. It returns the boot script
 // specified on the configuration or, if the host is unknown, it makes it
 // retry for a while until the user specifies alternative IPXE boot script.

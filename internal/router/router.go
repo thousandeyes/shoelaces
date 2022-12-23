@@ -53,6 +53,9 @@ func ShoelacesRouter(env *environment.Environment) http.Handler {
 	r.PathPrefix("/configs/").Handler(http.StripPrefix("/configs/",
 		handlers.TemplateServer()))
 
+	// Starting point for iPXE boot agents, usualy defined by DHCP server.
+	// Gets the iPXE boot agents into the polling loop.
+	r.HandleFunc("/start", handlers.StartPollingHandler).Methods("GET")
 	// Called by iPXE boot agents, returns boot script specified on the configuration
 	// or if the host is unknown makes it retry for a while until the user specifies
 	// alternative ipxe boot script
