@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright 2018 ThousandEyes Inc.
 #
@@ -59,7 +59,7 @@ def config_file(shoelaces_binary):
 
     sys.stderr.write("Using:\n{}".format(temp_config))
     temp_cfg_file = tempfile.NamedTemporaryFile(delete=False)
-    temp_cfg_file.write(temp_config)
+    temp_cfg_file.write(bytes(temp_config, 'ascii'))
     temp_cfg_file.flush()
     temp_cfg_file_name = temp_cfg_file.name
     temp_cfg_file.close()
@@ -126,10 +126,13 @@ def gen_mac_server_pairs():
 
 @pytest.mark.parametrize(("mac_last_octet", "servers"), gen_mac_server_pairs())
 def test_servers(shoelaces_instance, mac_last_octet, servers):
+    def sort_by_mac(srv):
+        return srv['Mac']
+
     poll_url = "{}/poll/1/ff-ff-ff-ff-ff-{}".format(API_URL, mac_last_octet)
     req = requests.get(poll_url)
     req = requests.get("{}/ajax/servers".format(API_URL))
-    assert sorted(req.json()) == sorted(servers)
+    assert sorted(req.json(), key=sort_by_mac) == sorted(servers, key=sort_by_mac)
 
 
 def test_unknown_server(shoelaces_instance):
