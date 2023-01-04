@@ -40,9 +40,9 @@ const (
 		"    http://{{.baseURL}}/poll/1/${netX/mac:hexhyp}\n" +
 		"#\n" +
 		"#\n" +
-		"# With doing\n" +
+		"# Do\n" +
 		"#    curl http://{{.baseURL}}/poll/1/06-66-de-ad-be-ef\n" +
-		"# you get an idea what iPXE is recieving next.\n"
+		"# to get an idea about what iPXE will receive.\n"
 
 	maxRetry = 10
 
