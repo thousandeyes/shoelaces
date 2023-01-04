@@ -1,5 +1,4 @@
 #!ipxe
-chain /poll/1/${netX/mac:hexhyp}
 menu Choose target to boot
 item /configs/coreos.ipxe coreos.ipxe
 item /env/production/configs/coreos.ipxe coreos.ipxe [production]
