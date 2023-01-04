@@ -141,7 +141,7 @@ with your TFTP and Shoelaces server addresses.
 # dhcp.conf
 next-server <your-tftp-server>;
 if exists user-class and option user-class = "iPXE" {
-  filename "http://<shoelaces-server>/poll/1/${netX/mac:hexhyp}";
+  filename "http://<shoelaces-server>/start";
 } else {
   filename "undionly.kpxe";
 }
@@ -153,7 +153,7 @@ putting it in `dnsmasq.d/ipxe.conf`:
 ```txt
 dhcp-match=set:ipxe,175 # iPXE sends a 175 option.
 dhcp-boot=tag:!ipxe,undionly.kpxe
-dhcp-boot=http://<shoelaces-server>/poll/1/${netX/mac:hexhyp}
+dhcp-boot=http://<shoelaces-server>/start
 ```
 
 The **${netX/mac:hexhyp}** strings represents the MAC address of the booting

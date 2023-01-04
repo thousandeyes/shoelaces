@@ -88,7 +88,7 @@ debug=true
 # dhcp.conf
 next-server <your-tftp-server>;
 if exists user-class and option user-class = "iPXE" {
-  filename "http://<shoelaces-server>/poll/1/${netX/mac:hexhyp}";
+  filename "http://<shoelaces-server>/start";
 } else {
   filename "undionly.kpxe";
 }
@@ -100,7 +100,7 @@ the following snippet:
 ```
 dhcp-match=set:ipxe,175 # iPXE sends a 175 option.
 dhcp-boot=tag:!ipxe,undionly.kpxe
-dhcp-boot=http://<shoelaces-server>/poll/1/${netX/mac:hexhyp}
+dhcp-boot=http://<shoelaces-server>/start
 ```
 
 A TFTP server such as *tftpd*(8) must be configured to serve the iPXE executable,

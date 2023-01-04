@@ -34,6 +34,16 @@ import (
 type ManualAction int
 
 const (
+	startScript = "#!ipxe\n" +
+		"echo Shoelaces starts polling\n" +
+		"chain --autofree --replace \\\n" +
+		"    http://{{.baseURL}}/poll/1/${netX/mac:hexhyp}\n" +
+		"#\n" +
+		"#\n" +
+		"# Do\n" +
+		"#    curl http://{{.baseURL}}/poll/1/06-66-de-ad-be-ef\n" +
+		"# to get an idea about what iPXE will receive.\n"
+
 	maxRetry = 10
 
 	retryScript = "#!ipxe\n" +
@@ -224,6 +234,26 @@ func setHostName(params map[string]interface{}, mac string) {
 			params["hostname"] = hostname
 		}
 	}
+}
+
+func GenStartScript(logger log.Logger, baseURL string) string {
+	variablesMap := map[string]interface{}{}
+	parsedTemplate := &bytes.Buffer{}
+
+	tmpl, err := template.New("retry").Parse(startScript)
+	if err != nil {
+		logger.Info("component", "polling", "msg", "Error parsing start template")
+		panic(err)
+	}
+
+	variablesMap["baseURL"] = baseURL
+	err = tmpl.Execute(parsedTemplate, variablesMap)
+	if err != nil {
+		logger.Info("component", "polling", "msg", "Error executing start template")
+		panic(err)
+	}
+
+	return parsedTemplate.String()
 }
 
 func genBootScript(logger log.Logger, templateRenderer *templates.ShoelacesTemplates, baseURL string, script *mappings.Script) string {
