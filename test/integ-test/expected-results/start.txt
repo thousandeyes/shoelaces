@@ -1,0 +1,9 @@
+#!ipxe
+echo Shoelaces starts polling
+chain --autofree --replace \
+    http://localhost:18888/poll/1/${netX/mac:hexhyp}
+#
+#
+# Do
+#    curl http://localhost:18888/poll/1/06-66-de-ad-be-ef
+# to get an idea about what the iPXE client will receive.
