@@ -1,2 +1,7 @@
 #!ipxe
-prompt --key 0x02 --timeout 10000 shoelaces: Press Ctrl-B for manual override... && chain -ar http://localhost:18888/ipxemenu || chain -ar http://localhost:18888/poll/1/ff-ff-ff-ff-ff-ff
+prompt --key 0x02 --timeout 7000 shoelaces: Press Ctrl-B for manual override... \
+  && chain -ar http://localhost:18888/ipxemenu \
+  || chain -ar http://localhost:18888/poll/1/ff-ff-ff-ff-ff-ff
+#
+# FYI: For the iPXE client is the above an endless loop,
+#      but it is the shoelaces server that decides if it loops.
