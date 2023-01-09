@@ -106,6 +106,7 @@ REQUEST_RESPONSE_PAIRS = [("/static/", "static.html"),
                           ("/configs/static/", "configs-static-default.txt"),
                           ("/configs/static/rc.local-bootstrap",
                            "rc.local-bootstrap"),
+                          ("/start", "start.txt"),
                           ("/ipxemenu", "ipxemenu.txt")]
 
 
