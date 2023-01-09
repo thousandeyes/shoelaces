@@ -49,15 +49,13 @@ const (
 	retryScript = "#!ipxe\n" +
 		"prompt --key 0x02 --timeout 7000 shoelaces: Press Ctrl-B for manual override... \\\n" +
 		"  && chain -ar http://{{.baseURL}}/ipxemenu \\\n" +
-		"  || chain -ar http://{{.baseURL}}/poll/1/{{.macAddress}}\n" +
-		"#\n" +
-		"# FYI: For the iPXE client is the above an endless loop,\n" +
-		"#      but it is the shoelaces server that decides if it loops.\n"
+		"  || chain -ar http://{{.baseURL}}/poll/1/{{.macAddress}}\n\n" +
+		"# Note: the iPXE client will see the above code as an endless loop.\n" +
+		"# However, Shoelaces will break that loop after a fixed number of retries.\n"
 
 	timeoutScript = "#!ipxe\n" +
 		"echo\n" +
-		"echo Shoelaces is at maxRetry\n" +
-		"echo\n" +
+		"echo Shoelaces reached the maximum number of retries\n" +
 		"exit\n"
 
 	// BootAction is used when a user selects a script for the polling

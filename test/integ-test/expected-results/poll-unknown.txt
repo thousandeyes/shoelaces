@@ -2,6 +2,6 @@
 prompt --key 0x02 --timeout 7000 shoelaces: Press Ctrl-B for manual override... \
   && chain -ar http://localhost:18888/ipxemenu \
   || chain -ar http://localhost:18888/poll/1/06-66-de-ad-be-ef
-#
-# FYI: For the iPXE client is the above an endless loop,
-#      but it is the shoelaces server that decides if it loops.
+
+# Note: the iPXE client will see the above code as an endless loop.
+# However, Shoelaces will break that loop after a fixed number of retries.
