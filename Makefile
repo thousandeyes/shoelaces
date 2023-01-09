@@ -21,6 +21,10 @@ docs: shoelaces.8
 test: fmt
 		$(GO) test -v $(pkgs) && \
 			./test/integ-test/integ_test.py
+# Internal information, in case you are hinted to use `-vv`
+# $ tail -n 2 test/integ-test/integ_test.py
+# if __name__ == "__main__":
+#     pytest.main(args=['-v'], plugins=None)
 
 .PHONY: all clean docs
 
