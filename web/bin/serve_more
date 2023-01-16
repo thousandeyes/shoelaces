@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+#
+#  serve more
+#  Script for making it easy that shoelaces
+#  can serve more static content.
+#  That content came to various way to the shoelaces server
+#  ( downloads, Linux distro packages, self build )
+#  This script creates symbolic links to it.
+#
+#  Start like `bin/serve_more  <file>...`.
+
+if [ ${#} -lt 1 ] ; then
+	echo "E: No datafiles provided"
+	echo "I: Add filenames of text files with lines like"
+	echo "I:   netboot/foo/vmlinux  /srv/downloaded_foo/linuz_6.1"
+	exit 1
+fi
+
+TOP=${PWD}  # Top of web directory, the 'static-dir=' value
+
+while read TOSERVE CONTENT
+do
+	echo ${TOSERVE} ${CONTENT}
+	TSDIR=$( dirname ${TOSERVE} )
+	TSFN=$( basename ${TOSERVE} )
+	cd ${TOP}
+
+	mkdir -p ${TSDIR}
+	cd ${TSDIR}
+	# Now create symbolic link, -f (force) to recreate it
+	ln -fs ${CONTENT} ${TSFN}
+
+done < <( cat ${@} | grep -v -e '^#' -e '^[ 	]*$' )
+# Multiple files allowed, the file can have comment lines and empty lines.
+
+# l l
