@@ -1,7 +1,0 @@
-#
-# default bind-addr=localhost:8081
-# base-url defaults to bind-addr
-data-dir=$PWD/../../configs/data-dir
-static-dir=$PWD/../../web
-# debug=true
-#
