@@ -29,5 +29,4 @@ curl http://localhost:8081/poll/1/06-66-d3-ad-b3-3f
    `debian.ipxe`, and use your screenshot program.
    
 4. Generate `shoelaces-overview.png` by simply running `make` in the
-   [/doc/screenshots/](/doc/screenshots/) directory. You will need
-   `msc-gen`.
+   `/doc/screenshots/` directory. You will need `msc-gen`.
