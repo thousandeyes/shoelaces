@@ -1,6 +1,3 @@
-# Makefile
-# advices how to regenerate some .pngs
-#
 all: config
 	@echo config file generated,
 	@echo See Makefile for further hints
@@ -31,9 +28,3 @@ config: config.in
 	# because the `git clone` or `tar xf` could have been
 	# done in any directory
 	sed -e 's@$$PWD@${PWD}@' $< > $@
-
-# FYI
-#   msc-gen homepage is https://gitlab.com/msc-generator/msc-generator
-#   screenshot program could be flameshot, https://flameshot.org/
-#
-# l l
