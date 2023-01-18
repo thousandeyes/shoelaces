@@ -1,0 +1,31 @@
+# This is the Shoelaces signalling chart.
+#
+# Find in this directory also a Makefile
+# with instructions how to convert it into a .png file.
+
+hscale=1.8;
+
+"Booting System","DHCP Server","TFTP Server", Shoelaces;
+"Booting System"->"DHCP Server":DHCP Request\nfrom BootROM;
+"DHCP Server"->"Booting System":DHCP response\npointing to iPXE executable;
+
+"Booting System"->"TFTP Server":TFTP Request\niPXE executable;
+"TFTP Server"->"Booting System":TFTP transmit\niPXE executable;
+
+"Booting System"->"DHCP Server":DHCP Request\nfrom iPXE;
+"DHCP Server"->"Booting System":DHCP response\npointing to Shoelaces start;
+
+"Booting System"->Shoelaces:HTTP get\n/start;
+Shoelaces->"Booting System":HTTP response\nHow to start polling instructions;
+
+box ..: "    Polling loop"
+  [line.corner=round]
+  {
+
+    "Booting System"->Shoelaces:HTTP get\n/poll/1/m-ac-a-dd-re-ss;
+    Shoelaces->"Booting System":HTTP response\nNext instructions;
+  };
+
+"Booting System"->"Booting System":Executes\ninstructions;
+
+# l l
