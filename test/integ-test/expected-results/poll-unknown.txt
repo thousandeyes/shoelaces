@@ -4,4 +4,4 @@ prompt --key 0x02 --timeout 7000 shoelaces: Press Ctrl-B for manual override... 
   || chain -ar http://localhost:18888/poll/1/06-66-de-ad-be-ef
 
 # Note: the iPXE client will see the above code as an endless loop.
-# However, Shoelaces will break that loop after a fixed number of retries.
+# However, Shoelaces server can break that loop to enable further booting.
