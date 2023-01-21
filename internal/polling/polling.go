@@ -51,7 +51,7 @@ const (
 		"  && chain -ar http://{{.baseURL}}/ipxemenu \\\n" +
 		"  || chain -ar http://{{.baseURL}}/poll/1/{{.macAddress}}\n\n" +
 		"# Note: the iPXE client will see the above code as an endless loop.\n" +
-		"# However, Shoelaces will break that loop after a fixed number of retries.\n"
+		"# However, Shoelaces server can break that loop to enable further booting.\n"
 
 	timeoutScript = "#!ipxe\n" +
 		"echo\n" +
