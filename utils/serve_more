@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+#
+#  serve more
+#
+#  Script for making it easy that shoelaces can serve more static content.
+#  That content (e.g. vmlinuz, initrd) came through various ways
+#  to the shoelaces server ( downloads, Linux distro packages, self build )
+#  This script creates symbolic links to that content.
+#
+#  Usage:
+#    * Be in the top of web directory, the 'static-dir=' value
+#    * `utils/serve_more  <file>...`
+
+if [ ${#} -lt 1 ] ; then
+	echo "E: No datafiles provided"
+	echo "I: Add filenames of text files with lines like"
+	echo "I:   netboot/foo/vmlinux  /srv/downloaded_foo/linuz_6.1"
+	exit 1
+fi
+
+
+while read TOSERVE CONTENT
+do
+	echo ${TOSERVE} ${CONTENT}
+	TSDIR=$( dirname ${TOSERVE} )
+	TSFN=$( basename ${TOSERVE} )
+
+	mkdir -p ${TSDIR}
+	pushd ${TSDIR} > /dev/null  # change directory, silently
+	# Now create the symbolic link,
+	# the -f (force) is to recreate it without complaiing
+	ln -fs ${CONTENT} ${TSFN}
+	popd > /dev/null  # switch directory back, silently
+
+done < <( cat ${@} | grep -v -e '^#' -e '^[ 	]*$' )
+# Multiple files allowed, the file can have comment lines and empty lines.
+
+
+exit 0
+
+The script is finished, what follows is text for humans.
+
+Example of a file that serve_more can process:
+```text
+#
+# serve files from packages
+#   debian-installer-11-netboot-amd64
+#   debian-installer-11-netboot-arm64
+# under a nicer URL
+#
+#
+di/arm64/initrd.gz  /usr/lib/debian-installer/images/11/arm64/text/debian-installer/arm64/initrd.gz
+di/arm64/linux   /usr/lib/debian-installer/images/11/arm64/text/debian-installer/arm64/linux
+
+di/amd64/initrd.gz  /usr/lib/debian-installer/images/11/amd64/text/debian-installer/amd64/initrd.gz
+di/amd64/linux   /usr/lib/debian-installer/images/11/amd64/text/debian-installer/amd64/linux
+#
+# Last Line
+```
+
+And the nicer URLs of the above example are like
+ http://shoelaces.lan:8081/static/di/arm64/initrd.gz
+ http://shoelaces.lan:8081/static/di/arm64/linux
+ http://shoelaces.lan:8081/static/di/amd64/initrd.gz
+ http://shoelaces.lan:8081/static/di/amd64/linux
+
+# l l
