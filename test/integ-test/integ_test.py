@@ -214,4 +214,4 @@ def test_template_variables_list(shoelaces_instance, script, env, vars):
 
 
 if __name__ == "__main__":
-    pytest.main(args=['-v'], plugins=None)
+    pytest.main(args=sys.argv[1:], plugins=None)
