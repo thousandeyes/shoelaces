@@ -20,7 +20,7 @@ docs: shoelaces.8
 
 test: fmt
 		$(GO) test -v $(pkgs) && \
-			./test/integ-test/integ_test.py
+			./test/integ-test/integ_test.py -vv
 
 .PHONY: all clean docs
 
