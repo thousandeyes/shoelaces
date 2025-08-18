@@ -50,6 +50,7 @@ type Environment struct {
 	DataDir           string
 	StaticDir         string
 	EnvDir            string
+	TFTP              *TFTPConfig
 	TemplateExtension string
 	MappingsFile      string
 	Debug             bool
@@ -60,6 +61,12 @@ func New() *Environment {
 	env := defaultEnvironment()
 	env.setFlags()
 	env.validateFlags()
+
+	env.TFTP = tftpFromFlags()
+
+	if env.TFTP != nil && env.TFTP.Root == "./tftp" && env.DataDir != "" {
+		env.TFTP.Root = env.DataDir + "/tftp"
+	}
 
 	if env.Debug {
 		env.Logger = log.AllowDebug(env.Logger)

@@ -32,5 +32,3 @@ config.yaml
 
 # auto-generated manpage
 docs/shoelaces.8
-
-/.direnv/
