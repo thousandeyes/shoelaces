@@ -14,6 +14,10 @@ WORKDIR /data
 COPY --from=build /tmp/mappings.yaml mappings.yaml
 COPY --from=build /shoelaces/web /web
 
+# TFTP files will be served from /data/tftp; mount or bake them in
+RUN mkdir -p /data/tftp
+EXPOSE 8081/tcp 69/udp
+
 ENV BIND_ADDR=0.0.0.0:8081
 EXPOSE 8081
 
