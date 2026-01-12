@@ -1,4 +1,4 @@
-FROM golang:1.15-alpine AS build
+FROM docker-te-base/base/go:1.15-alpine-linux-distroless AS build
 
 WORKDIR /shoelaces
 COPY . .
@@ -7,7 +7,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-s -w -extldflags "-static"' 
 printf "---\nnetworkMaps:\n" > /tmp/mappings.yaml
 
 # Final container has basically nothing in it but the executable
-FROM scratch
+FROM docker-te-base/base/debian:null-linux-distroless
 COPY --from=build /tmp/shoelaces /shoelaces
 
 WORKDIR /data
