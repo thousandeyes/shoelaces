@@ -25,7 +25,7 @@ import (
 
 func main() {
 	env := environment.New()
-	app := handlers.MiddlewareChain(env).Then(router.ShoelacesRouter(env))
+	app := handlers.MiddlewareChain(env, router.ShoelacesRouter(env))
 
 	env.Logger.Info("listening", "component", "main", "transport", "http", "addr", env.BindAddr)
 	env.Logger.Error("server exited", "component", "main", "err", http.ListenAndServe(env.BindAddr, app))
