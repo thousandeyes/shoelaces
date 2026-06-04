@@ -29,6 +29,11 @@ const chromiumBin = process.env.CHROMIUM_BIN || 'chromium';
 const smokeMac = '02:00:00:00:00:42';
 const smokeMacPath = smokeMac.replace(/:/g, '-');
 
+const [nodeMajor, nodeMinor] = process.versions.node.split('.').map(Number);
+if ((nodeMajor < 22 || (nodeMajor === 22 && nodeMinor < 4)) || typeof WebSocket !== 'function') {
+    throw new Error('Node >= 22.4.0 with global WebSocket is required for the frontend smoke test');
+}
+
 class CDPClient {
     constructor(webSocketURL) {
         this.nextID = 1;
