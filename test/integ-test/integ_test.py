@@ -97,6 +97,16 @@ def wait_for_shoelaces():
             time.sleep(1)
 
 
+def check_frontend_node_support():
+    supported = subprocess.call(["node", "-e", """
+const [major, minor] = process.versions.node.split('.').map(Number);
+process.exit((major > 22 || (major === 22 && minor >= 4)) && typeof WebSocket === 'function' ? 0 : 1);
+"""]) == 0
+    if not supported:
+        pytest.skip("node >= 22.4.0 with global WebSocket is required for the frontend smoke test")
+
+
+
 def test_shoelaces_startup(shoelaces_instance):
     """ Test API liveness """
     wait_for_shoelaces()
@@ -114,6 +124,7 @@ def test_frontend_browser_smoke(shoelaces_instance):
         pytest.skip("node is required for the frontend smoke test")
     if shutil.which("chromium") is None:
         pytest.skip("chromium is required for the frontend smoke test")
+    check_frontend_node_support()
 
     wait_for_shoelaces()
     script = os.path.join(TEST_DIR, "frontend_smoke.js")
