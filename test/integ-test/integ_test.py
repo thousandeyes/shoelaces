@@ -18,6 +18,7 @@
 
 import os
 import signal
+import shutil
 import subprocess
 import sys
 import time
@@ -79,8 +80,8 @@ def shoelaces_instance(config_file):
     sys.stderr.write("\nDone\n")
 
 
-def test_shoelaces_startup(shoelaces_instance):
-    """ Test API liveness """
+def wait_for_shoelaces():
+    """Wait until the integration server is accepting requests."""
     attempts = 0
     while True:
         try:
@@ -96,10 +97,27 @@ def test_shoelaces_startup(shoelaces_instance):
             time.sleep(1)
 
 
+def test_shoelaces_startup(shoelaces_instance):
+    """ Test API liveness """
+    wait_for_shoelaces()
+
+
 @pytest.mark.parametrize(("path"), [("/"), ("/events"), ("/mappings")])
 def test_response_success(shoelaces_instance, path):
     r = requests.get("{}{}".format(API_URL, path))
     r.raise_for_status()
+
+
+def test_frontend_browser_smoke(shoelaces_instance):
+    """Exercise local.js in a real browser against the integration server."""
+    if shutil.which("node") is None:
+        pytest.skip("node is required for the frontend smoke test")
+    if shutil.which("chromium") is None:
+        pytest.skip("chromium is required for the frontend smoke test")
+
+    wait_for_shoelaces()
+    script = os.path.join(TEST_DIR, "frontend_smoke.js")
+    subprocess.check_call(["node", script, API_URL], cwd=BASE_DIR)
 
 
 REQUEST_RESPONSE_PAIRS = [("/static/", "static.html"),
