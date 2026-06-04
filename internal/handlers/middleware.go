@@ -16,7 +16,6 @@ package handlers
 
 import (
 	"context"
-	"github.com/justinas/alice"
 	"net/http"
 	"regexp"
 
@@ -90,9 +89,11 @@ func disableCacheMiddleware(h http.Handler) http.Handler {
 	})
 }
 
-// MiddlewareChain receives a Shoelaces environment and returns a chains of
-// middlewares to apply to every request.
-func MiddlewareChain(env *environment.Environment) alice.Chain {
+type middleware func(http.Handler) http.Handler
+
+// MiddlewareChain receives a Shoelaces environment and returns a handler with
+// all global middlewares applied.
+func MiddlewareChain(env *environment.Environment, h http.Handler) http.Handler {
 	// contextMiddleware sets the environment key in the request Context.
 	contextMiddleware := func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -101,10 +102,17 @@ func MiddlewareChain(env *environment.Environment) alice.Chain {
 		})
 	}
 
-	return alice.New(
+	middlewares := []middleware{
 		secureHeadersMiddleware,
 		disableCacheMiddleware,
 		environmentMiddleware,
 		contextMiddleware,
-		loggingMiddleware)
+		loggingMiddleware,
+	}
+
+	for i := len(middlewares) - 1; i >= 0; i-- {
+		h = middlewares[i](h)
+	}
+
+	return h
 }
