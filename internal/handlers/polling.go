@@ -21,7 +21,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/gorilla/mux"
 	"github.com/thousandeyes/shoelaces/internal/log"
 	"github.com/thousandeyes/shoelaces/internal/polling"
 	"github.com/thousandeyes/shoelaces/internal/server"
@@ -49,9 +48,8 @@ func PollHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vars := mux.Vars(r)
 	// iPXE MAC addresses come with dashes instead of colons
-	mac := utils.MacDashToColon(vars["mac"])
+	mac := utils.MacDashToColon(r.PathValue("mac"))
 	host := r.FormValue("host")
 
 	err = validateMACAndIP(env.Logger, mac, ip)
