@@ -206,10 +206,10 @@ async function evaluate(cdp, sessionID, expression) {
     return result.result.value;
 }
 
-async function waitForPage(cdp, sessionID, expression, description) {
+async function waitForPage(cdp, sessionID, expression, description, timeoutMS = 5000) {
     await waitFor(description, async () => {
         return Boolean(await evaluate(cdp, sessionID, expression));
-    });
+    }, timeoutMS);
 }
 
 async function run() {
@@ -260,16 +260,85 @@ async function run() {
 
         await cdp.send('Runtime.enable', {}, sessionID);
         await cdp.send('Page.enable', {}, sessionID);
+        await cdp.send('Emulation.setDeviceMetricsOverride', {
+            width: 390,
+            height: 844,
+            deviceScaleFactor: 1,
+            mobile: true,
+        }, sessionID);
 
         await requestURL(apiURL + '/poll/1/' + smokeMacPath + '?host=frontend-smoke');
+        await waitFor('seeded unknown server to appear in ajax server list', async () => {
+            const servers = await requestJSON(apiURL + '/ajax/servers');
+            return servers.some((server) => server.Mac === smokeMac);
+        }, 10000);
+
         await cdp.send('Page.navigate', { url: apiURL + '/' }, sessionID);
 
         await waitForPage(cdp, sessionID, 'document.readyState === "complete"', 'home page load');
+        const collapsedNavbarState = await evaluate(cdp, sessionID, `(() => {
+            const button = document.querySelector('.navbar-toggler');
+            const menu = document.getElementById('navbarsExample10');
+            return {
+                buttonDisplay: button ? getComputedStyle(button).display : null,
+                menuDisplay: menu ? getComputedStyle(menu).display : null,
+                menuOpen: menu ? menu.classList.contains('show') : null,
+                expanded: button ? button.getAttribute('aria-expanded') : null,
+            };
+        })()`);
+
+        if (collapsedNavbarState.buttonDisplay === 'none') {
+            throw new Error('Navbar toggler is not visible at mobile width');
+        }
+        if (collapsedNavbarState.menuDisplay !== 'none' || collapsedNavbarState.menuOpen) {
+            throw new Error('Navbar menu is not collapsed before toggling');
+        }
+        if (collapsedNavbarState.expanded !== 'false') {
+            throw new Error('Navbar toggler did not start collapsed');
+        }
+
+        const expandedNavbarState = await evaluate(cdp, sessionID, `(() => {
+            const button = document.querySelector('.navbar-toggler');
+            const menu = document.getElementById('navbarsExample10');
+            button.click();
+            return {
+                menuDisplay: getComputedStyle(menu).display,
+                menuOpen: menu.classList.contains('show'),
+                expanded: button.getAttribute('aria-expanded'),
+            };
+        })()`);
+
+        if (expandedNavbarState.menuDisplay === 'none' || !expandedNavbarState.menuOpen) {
+            throw new Error('Navbar menu did not open after toggling');
+        }
+        if (expandedNavbarState.expanded !== 'true') {
+            throw new Error('Navbar toggler did not report expanded state');
+        }
+
+        const recollapsedNavbarState = await evaluate(cdp, sessionID, `(() => {
+            const button = document.querySelector('.navbar-toggler');
+            const menu = document.getElementById('navbarsExample10');
+            button.click();
+            return {
+                menuDisplay: getComputedStyle(menu).display,
+                menuOpen: menu.classList.contains('show'),
+                expanded: button.getAttribute('aria-expanded'),
+            };
+        })()`);
+
+        if (recollapsedNavbarState.menuDisplay !== 'none' || recollapsedNavbarState.menuOpen) {
+            throw new Error('Navbar menu did not collapse after second toggle');
+        }
+        if (recollapsedNavbarState.expanded !== 'false') {
+            throw new Error('Navbar toggler did not report collapsed state');
+        }
+
         await waitForPage(
             cdp,
             sessionID,
             'Boolean(document.querySelector("#mac option[value=\\"' + smokeMac + '\\"]"))',
-            'unknown server option'
+            'unknown server option',
+            10000
         );
 
         const homeState = await evaluate(cdp, sessionID, `(() => {

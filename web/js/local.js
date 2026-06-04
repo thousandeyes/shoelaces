@@ -17,6 +17,7 @@
 'use strict';
 
 document.addEventListener('DOMContentLoaded', function () {
+    setupNavbarCollapse();
     setVisible(document.getElementById('systems'), false);
     updateHostnames();
     updateEventHistory();
@@ -33,6 +34,28 @@ document.addEventListener('DOMContentLoaded', function () {
     window.setInterval(updateHostnames, 5000);
     window.setInterval(updateEventHistory, 5000);
 });
+
+function setupNavbarCollapse() {
+    document.querySelectorAll('[data-toggle="collapse"][data-target]').forEach(function (button) {
+        var target = document.querySelector(button.getAttribute('data-target'));
+        if (!target) {
+            return;
+        }
+
+        updateCollapseButton(button, target.classList.contains('show'));
+
+        button.addEventListener('click', function () {
+            var expanded = !target.classList.contains('show');
+            target.classList.toggle('show', expanded);
+            updateCollapseButton(button, expanded);
+        });
+    });
+}
+
+function updateCollapseButton(button, expanded) {
+    button.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    button.classList.toggle('collapsed', !expanded);
+}
 
 function fetchJSON(url) {
     return fetch(url, {
