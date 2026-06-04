@@ -16,102 +16,236 @@
 
 'use strict';
 
-$(document).ready(function () {
-    $('#systems').hide()
+document.addEventListener('DOMContentLoaded', function () {
+    setVisible(document.getElementById('systems'), false);
     updateHostnames();
     updateEventHistory();
-    $('#target').on('change', scriptSelection);
+
+    var target = document.getElementById('target');
+    if (target) {
+        target.addEventListener('change', scriptSelection);
+    }
 
     window.setTimeout(function () {
-        $('.alert').fadeTo(1000, 0).slideUp(1000, function () {
-            $(this).remove();
-        });
+        document.querySelectorAll('.alert').forEach(fadeOutAndRemove);
     }, 3000);
+
+    window.setInterval(updateHostnames, 5000);
+    window.setInterval(updateEventHistory, 5000);
 });
 
-window.setInterval(updateHostnames, 5000);
-window.setInterval(updateEventHistory, 5000);
-
-function updateHostnames() {
-    $.getJSON('/ajax/servers', function (systems) {
-        var macs = $('#mac');
-        var selection = $('select[name="mac"]').find('option:selected').text();
-        macs.empty();
-
-        if (systems.length == 0) {
-            $('#systems').fadeOut(500);
-            $('#loading').fadeIn(500);
-        } else {
-            $('#loading').hide(500);
-            $('#systems').removeClass('hide');
-            $('#systems').fadeIn(500);
-
-            $.each(systems, function () {
-                var system_str = this.Mac + ' - ' + this.IP;
-                if (this.Hostname != '') {
-                    system_str += ' - ' + this.Hostname;
-                }
-                macs.append('<option class="text-primary-custom" value="' + this.Mac + '">' + system_str  +  '</option>');
-            });
-
-            $('#mac option').filter(function () {
-                //may want to use $.trim in here
-                return $(this).text() == selection;
-            }).prop('selected', true);
+function fetchJSON(url) {
+    return fetch(url, {
+        headers: {
+            'Accept': 'application/json',
+        },
+    }).then(function (response) {
+        if (!response.ok) {
+            throw new Error('GET ' + url + ' failed: ' + response.status + ' ' + response.statusText);
         }
+        return response.json();
     });
 }
 
-function scriptSelection() {
-    var paramsElems = $('.params-container');
-    var option = $('select[name="target"]').find('option:selected');
-    var script = $(option).data('script');
-    var env = $(option).data('env');
-
-    if (!script || script.length === 0) {
-        paramsElems.empty();
-    } else {
-        $.get('/ajax/script/params', {
-            'script': script,
-            'environment': env
-        }, function (params) {
-            paramsElems.empty();
-            $.each(params, function () {
-                paramsElems.append('<div class="col">' +
-                                   '  <input type="text" class="form-control" id="' + this + '"name="' + this + '" placeholder="' + this + '" required/>' +
-                                   '</div>');
-            });
-            paramsElems.append('<input type="hidden" name="environment" value="' + env + '"/>');
-        });
+function logFetchError(error) {
+    if (window.console && window.console.error) {
+        window.console.error(error);
     }
 }
 
-function updateEventHistory() {
-    var eventLogContainer = $('.event-log');
-    $.get('/ajax/events', function (events) {
-        if (!events) {
-            return;
-        }
-        eventLogContainer.empty();
-        for (var mac in events) {
-            var title = mac;
-            if (events[mac][0].host != '') {
-                var host = events[mac][0].server.Hostname;
-                if (host == '') host = events[mac][0].server.IP;
-                title += ' (' + host + ')';
-            }
-            var elem = eventLogContainer.append('<div class="card" id="' + mac + '"><h5 class="card-header text-primary-custom">' + title + '</h5><div class="card-body"><ul class="list-group list-group-flush">');
+function setVisible(element, visible) {
+    if (!element) {
+        return;
+    }
 
-            $.each(events[mac], function () {
-                var date = (new Date(this.date)).toLocaleString();
-                var params = "";
-                for (var p in this.params) {
-                    params += p + ':' + this.params[p] + ' ';
+    if (visible) {
+        element.classList.remove('hide');
+        element.style.display = '';
+    } else {
+        element.style.display = 'none';
+    }
+}
+
+function fadeOutAndRemove(element) {
+    element.style.overflow = 'hidden';
+    element.style.height = element.scrollHeight + 'px';
+    element.style.transition = 'opacity 1s ease, height 1s ease';
+
+    window.requestAnimationFrame(function () {
+        element.style.opacity = '0';
+        element.style.height = '0';
+    });
+
+    window.setTimeout(function () {
+        element.remove();
+    }, 1000);
+}
+
+function updateHostnames() {
+    var macs = document.getElementById('mac');
+    if (!macs) {
+        return;
+    }
+
+    fetchJSON('/ajax/servers')
+        .then(function (systems) {
+            var selected = macs.options[macs.selectedIndex];
+            var selection = selected ? selected.textContent : '';
+
+            macs.textContent = '';
+
+            if (systems.length === 0) {
+                setVisible(document.getElementById('systems'), false);
+                setVisible(document.getElementById('loading'), true);
+                return;
+            }
+
+            setVisible(document.getElementById('loading'), false);
+            setVisible(document.getElementById('systems'), true);
+
+            systems.forEach(function (system) {
+                var option = document.createElement('option');
+                var systemText = system.Mac + ' - ' + system.IP;
+
+                if (system.Hostname !== '') {
+                    systemText += ' - ' + system.Hostname;
                 }
-                elem.append('<li class="list-group-item"><b>' + date + '</b>: ' + this.message + '</li>');
+
+                option.className = 'text-primary-custom';
+                option.value = system.Mac;
+                option.textContent = systemText;
+                option.selected = systemText === selection;
+                macs.appendChild(option);
+            });
+        })
+        .catch(logFetchError);
+}
+
+function scriptSelection() {
+    var paramsElems = document.querySelector('.params-container');
+    var target = document.querySelector('select[name="target"]');
+
+    if (!paramsElems || !target) {
+        return;
+    }
+
+    var option = target.options[target.selectedIndex];
+    var script = option ? option.dataset.script : '';
+    var env = option ? option.dataset.env : '';
+
+    paramsElems.textContent = '';
+
+    if (!script || script.length === 0) {
+        return;
+    }
+
+    var paramsURL = new URL('/ajax/script/params', window.location.origin);
+    paramsURL.searchParams.set('script', script);
+    paramsURL.searchParams.set('environment', env);
+
+    fetchJSON(paramsURL.toString())
+        .then(function (params) {
+            paramsElems.textContent = '';
+
+            params.forEach(function (param) {
+                var col = document.createElement('div');
+                var input = document.createElement('input');
+
+                col.className = 'col';
+
+                input.type = 'text';
+                input.className = 'form-control';
+                input.id = param;
+                input.name = param;
+                input.placeholder = param;
+                input.required = true;
+
+                col.appendChild(input);
+                paramsElems.appendChild(col);
             });
 
-            eventLogContainer.append('</ul></div></div>');
-        }
+            var environment = document.createElement('input');
+            environment.type = 'hidden';
+            environment.name = 'environment';
+            environment.value = env;
+            paramsElems.appendChild(environment);
+        })
+        .catch(logFetchError);
+}
+
+function updateEventHistory() {
+    var eventLogContainer = document.querySelector('.event-log');
+    if (!eventLogContainer) {
+        return;
+    }
+
+    fetchJSON('/ajax/events')
+        .then(function (events) {
+            if (!events) {
+                return;
+            }
+
+            eventLogContainer.textContent = '';
+
+            Object.keys(events).forEach(function (mac) {
+                eventLogContainer.appendChild(createEventCard(mac, events[mac]));
+            });
+        })
+        .catch(logFetchError);
+}
+
+function createEventCard(mac, events) {
+    var card = document.createElement('div');
+    var header = document.createElement('h5');
+    var body = document.createElement('div');
+    var list = document.createElement('ul');
+
+    card.className = 'card';
+    card.id = mac;
+
+    header.className = 'card-header text-primary-custom';
+    header.textContent = eventTitle(mac, events);
+
+    body.className = 'card-body';
+    list.className = 'list-group list-group-flush';
+
+    events.forEach(function (event) {
+        list.appendChild(createEventItem(event));
     });
+
+    body.appendChild(list);
+    card.appendChild(header);
+    card.appendChild(body);
+
+    return card;
+}
+
+function eventTitle(mac, events) {
+    var title = mac;
+    var firstEvent = events && events.length > 0 ? events[0] : null;
+    var server = firstEvent ? firstEvent.server : null;
+
+    if (!server) {
+        return title;
+    }
+
+    var host = server.Hostname || server.IP;
+    if (host) {
+        title += ' (' + host + ')';
+    }
+
+    return title;
+}
+
+function createEventItem(event) {
+    var item = document.createElement('li');
+    var date = document.createElement('b');
+
+    item.className = 'list-group-item';
+    date.textContent = new Date(event.date).toLocaleString();
+
+    item.appendChild(date);
+    item.appendChild(document.createTextNode(': ' + event.message));
+
+    return item;
 }
