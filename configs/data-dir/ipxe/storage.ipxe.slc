@@ -2,9 +2,9 @@
 #!ipxe
 
 echo This automatically overwrites data!
-echo Ubuntu {{.release}} amd64 storage
+echo Ubuntu {{.release}} storage (RAID)
 
-set mirror http://mirror.rackspace.com/ubuntu/dists/{{.release}}/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64
+set mirror http://archive.ubuntu.com/ubuntu/dists/{{.release}}/main/installer-amd64/current/legacy-images/netboot/ubuntu-installer/amd64
 
 chain --autofree http://{{.baseURL}}/configs/linux.cfg?hostname={{.hostname}}
 

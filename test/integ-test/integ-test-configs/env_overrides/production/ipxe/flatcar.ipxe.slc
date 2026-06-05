@@ -1,0 +1,10 @@
+{{define "flatcar.ipxe" -}}
+#!ipxe
+
+set flatcar-url https://stable.release.flatcar-linux.net/amd64-usr/{{.version}}
+
+kernel ${flatcar-url}/flatcar_production_pxe.vmlinuz initrd=flatcar_production_pxe_image.cpio.gz flatcar.first_boot=1 ignition.config.url=http://{{.baseURL}}/configs/ignition/{{.cloudconfig}}?hostname={{.hostname}}
+initrd ${flatcar-url}/flatcar_production_pxe_image.cpio.gz
+
+boot
+{{end}}

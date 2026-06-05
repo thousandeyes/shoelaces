@@ -15,12 +15,10 @@ d-i partman/choose_partition select finish
 d-i partman/confirm boolean true
 d-i partman/confirm_nooverwrite boolean true
 
-d-i user-setup/encrypt-home boolean {{.encrypt_home}}
-
 d-i base-installer/install-recommends boolean true
 
 d-i clock-setup/utc boolean true
-d-i time/zone string America/Los_Angeles
+d-i time/zone string UTC
 
 d-i clock-setup/ntp boolean true
 

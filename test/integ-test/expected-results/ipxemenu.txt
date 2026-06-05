@@ -1,7 +1,7 @@
 #!ipxe
 menu Choose target to boot
-item /configs/coreos.ipxe coreos.ipxe
-item /env/production/configs/coreos.ipxe coreos.ipxe [production]
+item /configs/flatcar.ipxe flatcar.ipxe
+item /env/production/configs/flatcar.ipxe flatcar.ipxe [production]
 
 choose target
 echo -n Enter hostname or none:
