@@ -58,8 +58,12 @@ type Environment struct {
 // New returns an initialized environment structure
 func New() *Environment {
 	env := defaultEnvironment()
-	env.setFlags()
-	env.validateFlags()
+	flags, err := env.setFlags(os.Args[1:], os.Environ())
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	env.validateFlags(flags)
 
 	if env.Debug {
 		env.Logger = log.AllowDebug(env.Logger)
