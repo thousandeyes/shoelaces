@@ -1,9 +1,6 @@
 # github.com/gorilla/mux v1.8.0
 ## explicit; go 1.12
 github.com/gorilla/mux
-# github.com/justinas/alice v1.2.0
-## explicit; go 1.12
-github.com/justinas/alice
 # github.com/kr/text v0.2.0
 ## explicit
 # github.com/namsral/flag v1.7.4-pre
