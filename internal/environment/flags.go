@@ -26,9 +26,9 @@ import (
 func (env *Environment) setFlags(args []string, environ []string) (*flag.FlagSet, error) {
 	env.setFlagDefaults()
 
-	configFile := configFileFromArgs(args)
-	if configFile == "" {
-		configFile = envValue(environ, "CONFIG")
+	configFile, configFromArgs := configFileFromArgs(args)
+	if !configFromArgs {
+		configFile, _ = envValue(environ, "CONFIG")
 	}
 	if configFile != "" {
 		env.ConfigFile = configFile
@@ -70,22 +70,22 @@ func (env *Environment) registerFlags() *flag.FlagSet {
 	return flags
 }
 
-func configFileFromArgs(args []string) string {
+func configFileFromArgs(args []string) (string, bool) {
 	for i, arg := range args {
 		if arg == "-config" || arg == "--config" {
 			if i+1 < len(args) {
-				return args[i+1]
+				return args[i+1], true
 			}
-			return ""
+			return "", true
 		}
 		if strings.HasPrefix(arg, "-config=") {
-			return strings.TrimPrefix(arg, "-config=")
+			return strings.TrimPrefix(arg, "-config="), true
 		}
 		if strings.HasPrefix(arg, "--config=") {
-			return strings.TrimPrefix(arg, "--config=")
+			return strings.TrimPrefix(arg, "--config="), true
 		}
 	}
-	return ""
+	return "", false
 }
 
 func (env *Environment) loadConfigFile(configFile string) error {
@@ -155,24 +155,27 @@ func (env *Environment) applyEnvVars(environ []string) error {
 }
 
 func (env *Environment) applyEnvVar(environ []string, key, name string) error {
-	return env.setConfigValue(key, envValue(environ, name))
+	value, ok := envValue(environ, name)
+	if !ok {
+		return nil
+	}
+	if key == "debug" && value == "" {
+		value = "true"
+	}
+	return env.setConfigValue(key, value)
 }
 
-func envValue(environ []string, name string) string {
+func envValue(environ []string, name string) (string, bool) {
 	for _, entry := range environ {
 		key, value, found := strings.Cut(entry, "=")
 		if found && key == name {
-			return value
+			return value, true
 		}
 	}
-	return ""
+	return "", false
 }
 
 func (env *Environment) setConfigValue(key, value string) error {
-	if value == "" {
-		return nil
-	}
-
 	switch key {
 	case "config":
 		env.ConfigFile = value
