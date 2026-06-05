@@ -1,0 +1,310 @@
+/*
+Copyright 2018 ThousandEyes Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+/* ── Reset ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #212529;
+    height: 100%;
+}
+
+/* ── Layout ─────────────────────────────────────────────────── */
+html {
+    position: relative;
+    padding-top: 56px;
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.main-container {
+    padding-top: 30px;
+    margin-bottom: 80px;
+}
+
+/* ── Navbar ─────────────────────────────────────────────────── */
+nav.navbar {
+    background-color: #002b3b;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 8px 16px;
+    min-height: 56px;
+}
+
+.navbar-brand {
+    padding: 0;
+    margin-right: 16px;
+}
+
+.navbar-brand img {
+    height: 40px;
+    display: block;
+}
+
+.navbar-toggler {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
+    padding: 6px 10px;
+    cursor: pointer;
+    display: block; /* visible on mobile by default */
+    line-height: 1;
+}
+
+.navbar-toggler-icon {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: #fff;
+    position: relative;
+}
+
+.navbar-toggler-icon::before,
+.navbar-toggler-icon::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #fff;
+}
+
+.navbar-toggler-icon::before { top: -6px; }
+.navbar-toggler-icon::after  { top:  6px; }
+
+/* Mobile: menu hidden until toggled */
+.navbar-collapse {
+    display: none;
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.navbar-collapse.show {
+    display: flex;
+}
+
+.navbar-nav {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    width: 100%;
+}
+
+.nav-link {
+    display: block;
+    padding: 6px 12px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.nav-link:hover { color: #ccc; }
+
+/* Desktop: toggler hidden, menu always visible */
+@media (min-width: 992px) {
+    .navbar-toggler { display: none; }
+
+    .navbar-collapse {
+        display: flex;
+        flex-basis: auto;
+        flex-direction: row;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .navbar-nav {
+        flex-direction: row;
+        margin: 0;
+        width: auto;
+        gap: 4px;
+    }
+}
+
+/* ── Grid (used for loading-state centering only) ────────────── */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -15px;
+}
+
+.col-md-3,
+.col-md-6,
+.col-md-12 {
+    padding: 0 15px;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .col-md-3  { width: 25%; }
+    .col-md-6  { width: 50%; }
+    .col-md-12 { width: 100%; }
+}
+
+.center-block {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ── Cards ──────────────────────────────────────────────────── */
+.card {
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 4px;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 10px 16px;
+    background-color: #f7f7f7;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    font-weight: 500;
+}
+
+.card-body { padding: 16px; }
+
+.event-log .card-body { padding: 0; }
+
+/* ── List groups (event entries) ─────────────────────────────── */
+.list-group {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.list-group-item {
+    padding: 10px 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.list-group-item:first-child { border-top: none; }
+
+/* ── Forms ──────────────────────────────────────────────────── */
+.form-group { margin-bottom: 16px; }
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.form-row .col { flex: 1; min-width: 120px; }
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    appearance: none;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #002b3b;
+    box-shadow: 0 0 0 2px rgba(0, 43, 59, 0.2);
+}
+
+select.form-control { cursor: pointer; }
+
+/* ── Button ─────────────────────────────────────────────────── */
+.btn {
+    display: inline-block;
+    padding: 6px 16px;
+    font-size: 14px;
+    font-weight: 400;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #ef5e21;
+    border-color: #ef5e21;
+}
+
+.btn-primary:hover {
+    background-color: #fff;
+    color: #000;
+    border-color: #ef5e21;
+}
+
+/* ── Table ──────────────────────────────────────────────────── */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+}
+
+.table th,
+.table td {
+    padding: 8px 12px;
+    border-top: 1px solid #dee2e6;
+    text-align: left;
+}
+
+.table th {
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+}
+
+.table tbody tr:first-child td { border-top: none; }
+
+/* ── Footer ─────────────────────────────────────────────────── */
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #f5f5f5;
+    padding: 8px 0;
+}
+
+/* ── Utilities ──────────────────────────────────────────────── */
+.text-center  { text-align: center; }
+.text-muted   { color: #6c757d; }
+.text-light   { color: #fff; }
+.hide         { display: none; }
+
+/* ── Custom ─────────────────────────────────────────────────── */
+.text-primary-custom { color: #002b3b; }
+
+a { color: inherit; text-decoration: none; }
+a:hover { color: #bf0000; }
+
+code { font-size: 80%; }
+
+.params-container { margin-top: 10px; }
