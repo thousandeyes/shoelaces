@@ -172,7 +172,7 @@ def test_unknown_server(shoelaces_instance):
         assert requests.get(poll_url).text == poll.read()
     # Setting the config for the new host should succeed.
     requests.post(API_URL + '/update/target',
-                  {"target": "coreos.ipxe",
+                  {"target": "flatcar.ipxe",
                    "mac": "06:66:de:ad:be:ef",
                    "version": "666.0",
                    "cloudconfig": "virtual"}).raise_for_status()
@@ -209,7 +209,7 @@ def test_events(shoelaces_instance):
                                                                      'cloudconfig': 'virtual',
                                                                      'hostname': '06-66-de-ad-be-ef',
                                                                      'version': '666.0'},
-                                                          'script': 'coreos.ipxe'})
+                                                          'script': 'flatcar.ipxe'})
 
 
 POLL_PAIRS = [(None, "poll.txt"),
@@ -229,9 +229,9 @@ def test_poll(shoelaces_instance, params, expected):
         assert poll.read() == req.text
 
 
-TPL_VARS_PAIRS = [("coreos.ipxe", "", ["cloudconfig", "version"]),
-                  ("coreos.ipxe", "default", ["cloudconfig", "version"]),
-                  ("coreos.ipxe", "production", ["cloudconfig", "version", "hostname"])]
+TPL_VARS_PAIRS = [("flatcar.ipxe", "", ["cloudconfig", "version"]),
+                  ("flatcar.ipxe", "default", ["cloudconfig", "version"]),
+                  ("flatcar.ipxe", "production", ["cloudconfig", "version", "hostname"])]
 
 
 @pytest.mark.parametrize(("script", "env", "vars"), TPL_VARS_PAIRS)

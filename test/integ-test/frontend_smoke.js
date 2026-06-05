@@ -370,7 +370,7 @@ async function run() {
             const mac = document.getElementById('mac');
             const target = document.getElementById('target');
             mac.value = '${smokeMac}';
-            target.value = 'coreos.ipxe';
+            target.value = 'flatcar.ipxe';
             target.dispatchEvent(new Event('change', { bubbles: true }));
             return true;
         })()`);
@@ -424,7 +424,7 @@ async function run() {
         );
 
         const eventText = await evaluate(cdp, sessionID, 'document.querySelector(".event-log").textContent');
-        if (!eventText.includes('A user selected coreos.ipxe')) {
+        if (!eventText.includes('A user selected flatcar.ipxe')) {
             throw new Error('Event history did not render user selection: ' + eventText);
         }
 

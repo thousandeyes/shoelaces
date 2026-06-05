@@ -1,0 +1,14 @@
+{{define "almalinux.ipxe" -}}
+#!ipxe
+set hostname {{.hostname}}
+set release {{.release}}
+set base https://repo.almalinux.org/almalinux/${release}/BaseOS/x86_64/os
+
+echo This automatically overwrites data!
+echo AlmaLinux ${release}
+echo Installing ${hostname}
+
+kernel ${base}/images/pxeboot/vmlinuz initrd=initrd.img repo=${base} inst.ks=http://{{.baseURL}}/configs/kickstart/almalinux?hostname=${hostname}&release=${release} console=tty0 console=ttyS0,115200n8
+initrd ${base}/images/pxeboot/initrd.img
+boot
+{{end}}

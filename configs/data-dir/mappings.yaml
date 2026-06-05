@@ -1,17 +1,17 @@
 networkMaps:
   - network: 192.168.0.0/24
     script:
-      name: ubuntu-minimal.ipxe
+      name: ubuntu.ipxe
       params:
-        release: xenial
+        release: jammy
   - network: 10.0.10.0/24
     script:
-      name: coreos.ipxe
+      name: flatcar.ipxe
       params:
-        release: stable
+        version: stable
 hostnameMaps:
   - hostname: msc1.example.com
     script:
-      name: ubuntu-minimal.ipxe
+      name: debian.ipxe
       params:
-        release: trusty
+        release: bookworm

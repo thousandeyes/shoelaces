@@ -1,0 +1,33 @@
+{{define "kickstart/almalinux" -}}
+text
+reboot
+
+url --url="https://repo.almalinux.org/almalinux/{{.release}}/BaseOS/x86_64/os"
+
+network --bootproto=dhcp --hostname={{.hostname}}
+
+rootpw --plaintext changeme
+authselect select minimal
+
+keyboard --vckeymap=us --xlayouts=us
+lang en_US.UTF-8
+timezone UTC --utc
+
+zerombr
+clearpart --all --drives=sda --initlabel
+bootloader --append="console=tty0 console=ttyS0,115200n8" --location=mbr
+part biosboot --fstype=biosboot --size=1
+part /boot --fstype=ext4 --size=1024
+part pv.01 --size=1 --grow
+volgroup vg0 pv.01
+logvol swap --vgname=vg0 --size=2048 --name=lv_swap
+logvol / --fstype=xfs --vgname=vg0 --size=1 --grow --name=lv_root
+
+%packages
+@^minimal-environment
+%end
+
+%post
+hostnamectl set-hostname {{.hostname}}
+%end
+{{end}}
