@@ -15,7 +15,6 @@
 package mappings
 
 import (
-	"io/ioutil"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -58,7 +57,7 @@ func ParseYamlMappings(logger log.Logger, mappingsFile string) *Mappings {
 	var mappings Mappings
 
 	logger.Info("reading mappings", "component", "config", "source", mappingsFile)
-	yamlFile, err := ioutil.ReadFile(mappingsFile)
+	yamlFile, err := os.ReadFile(mappingsFile)
 
 	if err != nil {
 		logger.Error("read mappings failed", "err", err)
