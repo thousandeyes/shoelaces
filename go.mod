@@ -3,7 +3,6 @@ module github.com/thousandeyes/shoelaces
 go 1.22
 
 require (
-	github.com/gorilla/mux v1.8.0
 	github.com/namsral/flag v1.7.4-pre
 	gopkg.in/yaml.v2 v2.4.0
 )
