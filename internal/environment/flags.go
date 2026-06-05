@@ -15,6 +15,7 @@
 package environment
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -201,23 +202,19 @@ func (env *Environment) setConfigValue(key, value string) error {
 	return nil
 }
 
-func (env *Environment) validateFlags(flags *flag.FlagSet) {
-	error := false
+func (env *Environment) validateFlags() error {
+	var messages []string
 
 	if env.DataDir == "" {
-		fmt.Println("[*] You must specify the data-dir parameter")
-		error = true
+		messages = append(messages, "[*] You must specify the data-dir parameter")
 	}
 
 	if env.StaticDir == "" {
-		fmt.Println("[*] You must specify the data-dir parameter")
-		error = true
+		messages = append(messages, "[*] You must specify the data-dir parameter")
 	}
 
-	if error {
-		fmt.Println("\nAvailable parameters:")
-		flags.PrintDefaults()
-		fmt.Println("\nParameters can be specified as environment variables, arguments or in a config file.")
-		os.Exit(1)
+	if len(messages) > 0 {
+		return errors.New(strings.Join(messages, "\n"))
 	}
+	return nil
 }

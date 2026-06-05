@@ -63,7 +63,13 @@ func New() *Environment {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	env.validateFlags(flags)
+	if err := env.validateFlags(); err != nil {
+		fmt.Println(err)
+		fmt.Println("\nAvailable parameters:")
+		flags.PrintDefaults()
+		fmt.Println("\nParameters can be specified as environment variables, arguments or in a config file.")
+		os.Exit(1)
+	}
 
 	if env.Debug {
 		env.Logger = log.AllowDebug(env.Logger)

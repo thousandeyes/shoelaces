@@ -122,6 +122,20 @@ func TestSetFlagsReturnsConfigErrors(t *testing.T) {
 	}
 }
 
+func TestValidateFlagsReturnsError(t *testing.T) {
+	env := defaultEnvironment()
+	env.DataDir = "data"
+	env.StaticDir = "web"
+	if err := env.validateFlags(); err != nil {
+		t.Fatal(err)
+	}
+
+	env.StaticDir = ""
+	if err := env.validateFlags(); err == nil {
+		t.Fatal("Expected error")
+	}
+}
+
 func writeConfig(t *testing.T, name string, contents string) string {
 	t.Helper()
 
