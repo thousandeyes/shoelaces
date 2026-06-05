@@ -1,0 +1,44 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Unit tests
+        run: go test ./...
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install integration test dependencies
+        run: pip install pytest requests python-dateutil
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - uses: browser-actions/setup-chrome@v1
+        id: setup-chrome
+        with:
+          browser: chromium
+
+      - name: Expose chromium binary
+        run: sudo ln -sf "${{ steps.setup-chrome.outputs.chrome-path }}" /usr/local/bin/chromium
+
+      - name: Build
+        run: go build -o shoelaces
+
+      - name: Integration tests
+        run: ./test/integ-test/integ_test.py -vv
