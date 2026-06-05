@@ -57,11 +57,11 @@ type YamlScript struct {
 func ParseYamlMappings(logger log.Logger, mappingsFile string) *Mappings {
 	var mappings Mappings
 
-	logger.Info("component", "config", "msg", "Reading mappings", "source", mappingsFile)
+	logger.Info("reading mappings", "component", "config", "source", mappingsFile)
 	yamlFile, err := ioutil.ReadFile(mappingsFile)
 
 	if err != nil {
-		logger.Error(err)
+		logger.Error("read mappings failed", "err", err)
 		os.Exit(1)
 	}
 
@@ -70,7 +70,7 @@ func ParseYamlMappings(logger log.Logger, mappingsFile string) *Mappings {
 
 	err = yaml.Unmarshal(yamlFile, &mappings)
 	if err != nil {
-		logger.Error(err)
+		logger.Error("parse mappings failed", "err", err)
 		os.Exit(1)
 	}
 

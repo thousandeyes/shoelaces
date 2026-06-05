@@ -16,46 +16,31 @@ package log
 
 import (
 	"io"
-
-	"github.com/go-kit/kit/log"
-	"github.com/go-kit/kit/log/level"
+	"log/slog"
 )
 
-// Logger struct holds a log.Logger plus functions required for logging
-// with different levels. They functions are syntactic sugar to avoid
-// having to import "github.com/go-kit/kit/log/level" in every package that
-// has to cast a log.
+// Logger wraps slog with the level switch Shoelaces uses for debug mode.
 type Logger struct {
-	Raw   log.Logger
-	Info  func(...interface{}) error
-	Debug func(...interface{}) error
-	Error func(...interface{}) error
+	*slog.Logger
+	level *slog.LevelVar
 }
-
-const callerLevel int = 6
 
 // MakeLogger receives a io.Writer and return a Logger struct.
 func MakeLogger(w io.Writer) Logger {
-	raw := log.NewLogfmtLogger(log.NewSyncWriter(w))
-	raw = log.With(raw, "ts", log.DefaultTimestampUTC, "caller", log.Caller(callerLevel))
-	filtered := level.NewFilter(raw, level.AllowInfo())
+	level := &slog.LevelVar{}
+	level.Set(slog.LevelInfo)
 
 	return Logger{
-		Raw:   raw,
-		Info:  level.Info(filtered).Log,
-		Debug: level.Debug(filtered).Log,
-		Error: level.Error(filtered).Log,
+		Logger: slog.New(slog.NewTextHandler(w, &slog.HandlerOptions{
+			AddSource: true,
+			Level:     level,
+		})),
+		level: level,
 	}
 }
 
 // AllowDebug receives a Logger and enables the debug logging level.
 func AllowDebug(l Logger) Logger {
-	filtered := level.NewFilter(l.Raw, level.AllowDebug())
-
-	return Logger{
-		Raw:   l.Raw,
-		Info:  level.Info(filtered).Log,
-		Debug: level.Debug(filtered).Log,
-		Error: level.Error(filtered).Log,
-	}
+	l.level.Set(slog.LevelDebug)
+	return l
 }

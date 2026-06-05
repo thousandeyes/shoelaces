@@ -26,7 +26,7 @@ func ListEvents(w http.ResponseWriter, r *http.Request) {
 	env := envFromRequest(r)
 	eventList, err := json.Marshal(env.EventLog.Events)
 	if err != nil {
-		env.Logger.Error("component", "handler", "err", err)
+		env.Logger.Error("marshal events failed", "component", "handler", "err", err)
 		os.Exit(1)
 	}
 
