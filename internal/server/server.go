@@ -108,13 +108,13 @@ func StartStateCleaner(logger log.Logger, serverStates *States) {
 			servers := serverStates.Servers
 			expire := int(time.Now().UTC().Unix()) - expireAfterSec
 
-			logger.Debug("component", "polling", "msg", "Cleaning", "before", time.Unix(int64(expire), 0))
+			logger.Debug("cleaning server states", "component", "polling", "before", time.Unix(int64(expire), 0))
 
 			serverStates.Lock()
 			for mac, state := range servers {
 				if state.LastAccess <= expire {
 					delete(servers, mac)
-					logger.Debug("component", "polling", "msg", "Mac cleaned", "mac", mac)
+					logger.Debug("mac cleaned", "component", "polling", "mac", mac)
 				}
 			}
 			serverStates.Unlock()

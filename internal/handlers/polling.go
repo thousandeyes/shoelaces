@@ -32,11 +32,10 @@ import (
 func StartPollingHandler(w http.ResponseWriter, r *http.Request) {
 	env := envFromRequest(r)
 
-	script := polling.GenStartScript(env.Logger,  env.BaseURL)
+	script := polling.GenStartScript(env.Logger, env.BaseURL)
 
 	w.Write([]byte(script))
 }
-
 
 // PollHandler is called by iPXE boot agents. It returns the boot script
 // specified on the configuration or, if the host is unknown, it makes it
@@ -84,7 +83,7 @@ func ServerListHandler(w http.ResponseWriter, r *http.Request) {
 
 	servers, err := json.Marshal(polling.ListServers(env.ServerStates))
 	if err != nil {
-		env.Logger.Error("component", "handler", "err", err)
+		env.Logger.Error("marshal servers failed", "component", "handler", "err", err)
 		os.Exit(1)
 	}
 
@@ -147,16 +146,16 @@ func parsePostForm(form map[string][]string) (mac, scriptName, environment strin
 
 func validateMACAndIP(logger log.Logger, mac string, ip string) (err error) {
 	if !utils.IsValidMAC(mac) {
-		logger.Error("component", "polling", "msg", "Invalid MAC", "mac", mac)
+		logger.Error("invalid mac", "component", "polling", "mac", mac)
 		return fmt.Errorf("%s", "Invalid MAC")
 	}
 
 	if !utils.IsValidIP(ip) {
-		logger.Error("component", "polling", "msg", "Invalid IP", "ip", ip)
+		logger.Error("invalid ip", "component", "polling", "ip", ip)
 		return fmt.Errorf("%s", "Invalid IP")
 	}
 
-	logger.Debug("component", "polling", "msg", "MAC and IP validated", "mac", mac, "ip", ip)
+	logger.Debug("mac and ip validated", "component", "polling", "mac", mac, "ip", ip)
 
 	return nil
 }
@@ -164,7 +163,7 @@ func validateMACAndIP(logger log.Logger, mac string, ip string) (err error) {
 func resolveHostname(logger log.Logger, ip string) string {
 	host := utils.ResolveHostname(ip)
 	if host == "" {
-		logger.Info("component", "polling", "msg", "Can't resolve IP", "ip", ip)
+		logger.Info("can't resolve ip", "component", "polling", "ip", ip)
 	}
 
 	return host

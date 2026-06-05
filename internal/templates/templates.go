@@ -67,7 +67,7 @@ func New() *ShoelacesTemplates {
 func (s *ShoelacesTemplates) parseTemplateInfo(logger log.Logger, path string) shoelacesTemplateInfo {
 	fh, err := os.Open(path)
 	if err != nil {
-		logger.Error("component", "template", "err", err.Error())
+		logger.Error("open template failed", "component", "template", "err", err)
 		os.Exit(1)
 	}
 
@@ -103,7 +103,7 @@ func (s *ShoelacesTemplates) checkAddEnvironment(logger log.Logger, environment 
 	if _, ok := s.envTemplates[environment]; !ok {
 		c, e := s.envTemplates[defaultEnvironment].templateObj.Clone()
 		if e != nil {
-			logger.Error("component", "template", "msg", "Template for environment already executed", "environment", environment)
+			logger.Error("template for environment already executed", "component", "template", "environment", environment)
 			os.Exit(1)
 		}
 		s.envTemplates[environment] = shoelacesTemplateEnvironment{
@@ -139,16 +139,16 @@ func (s *ShoelacesTemplates) ParseTemplates(logger log.Logger, dataDir string, e
 	s.envDir = envDir
 	s.tplExt = tplExt
 
-	logger.Debug("component", "template", "msg", "Template parsing started", "dir", dataDir)
+	logger.Debug("template parsing started", "component", "template", "dir", dataDir)
 
 	tplScannerDefault := func(p string, info os.FileInfo, err error) error {
 		if strings.HasPrefix(p, path.Join(dataDir, envDir)) {
 			return err
 		}
 		if strings.HasSuffix(p, tplExt) {
-			logger.Info("component", "template", "msg", "Parsing file", "file", p)
+			logger.Info("parsing file", "component", "template", "file", p)
 			if err := s.addTemplate(logger, p, defaultEnvironment); err != nil {
-				logger.Error("component", "template", "err", err.Error())
+				logger.Error("parse template failed", "component", "template", "err", err)
 				os.Exit(1)
 			}
 		}
@@ -158,10 +158,10 @@ func (s *ShoelacesTemplates) ParseTemplates(logger log.Logger, dataDir string, e
 	tplScannerOverride := func(p string, info os.FileInfo, err error) error {
 		if strings.HasSuffix(p, tplExt) {
 			env := s.getEnvFromPath(p)
-			logger.Info("component", "template", "msg", "Parsing ovveride", "environment", env, "file", p)
+			logger.Info("parsing override", "component", "template", "environment", env, "file", p)
 
 			if err := s.addTemplate(logger, p, env); err != nil {
-				logger.Error("component", "template", "err", err.Error())
+				logger.Error("parse template override failed", "component", "template", "err", err)
 				os.Exit(1)
 			}
 		}
@@ -171,11 +171,11 @@ func (s *ShoelacesTemplates) ParseTemplates(logger log.Logger, dataDir string, e
 	if err := filepath.Walk(dataDir, tplScannerDefault); err != nil {
 		panic(err)
 	}
-	logger.Info("component", "template", "msg", "Parsing override files", "dir", path.Join(dataDir, envDir))
+	logger.Info("parsing override files", "component", "template", "dir", path.Join(dataDir, envDir))
 	if err := filepath.Walk(path.Join(dataDir, envDir), tplScannerOverride); err != nil {
-		logger.Info("component", "template", "msg", "No overrides found")
+		logger.Info("no overrides found", "component", "template")
 	}
-	logger.Debug("component", "template", "msg", "Parsing ended")
+	logger.Debug("template parsing ended", "component", "template")
 }
 
 // RenderTemplate receives a name and a map of parameters, among other
@@ -185,7 +185,7 @@ func (s *ShoelacesTemplates) RenderTemplate(logger log.Logger, configName string
 	if envName == "" {
 		envName = defaultEnvironment
 	}
-	logger.Info("component", "template", "action", "template-request", "template", configName, "env", envName, "parameters", utils.MapToString(paramMap))
+	logger.Info("template request", "component", "template", "template", configName, "env", envName, "parameters", utils.MapToString(paramMap))
 
 	requiredVariables := s.envTemplates[envName].templateVars[configName]
 
@@ -198,7 +198,7 @@ func (s *ShoelacesTemplates) RenderTemplate(logger log.Logger, configName string
 		err = s.envTemplates[defaultEnvironment].templateObj.ExecuteTemplate(&b, configName, paramMap)
 	}
 	if err != nil {
-		logger.Info("component", "template", "action", "render-template", "err", err.Error())
+		logger.Info("render template failed", "component", "template", "err", err)
 		return "", err
 	}
 	r := b.String()
@@ -212,7 +212,7 @@ func (s *ShoelacesTemplates) RenderTemplate(logger log.Logger, configName string
 				missingVariables += requiredVariable
 			}
 		}
-		logger.Info("component", "template", "msg", "Missing variables in request", "variables", missingVariables)
+		logger.Info("missing variables in request", "component", "template", "variables", missingVariables)
 		return "", errors.New("Missing variables in request: " + missingVariables)
 	}
 

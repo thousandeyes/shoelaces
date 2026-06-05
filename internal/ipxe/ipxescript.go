@@ -69,7 +69,7 @@ func appendScriptsFromDir(logger log.Logger, scripts []Script, templateExtension
 func scriptDirList(logger log.Logger, templateExtension string, datadir string) []ScriptName {
 	files, err := ioutil.ReadDir(datadir)
 	if err != nil {
-		logger.Info("component=ipxescript action=dir-list dir=%s err=\"%v\"", datadir, err.Error())
+		logger.Info("list ipxe scripts failed", "component", "ipxescript", "dir", datadir, "err", err)
 		return nil
 	}
 

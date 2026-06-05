@@ -73,7 +73,7 @@ func New() *Environment {
 
 	env.EventLog = &event.Log{}
 
-	env.Logger.Info("component", "environment", "msg", "Override found", "environment", env.Environments)
+	env.Logger.Info("override found", "component", "environment", "environment", env.Environments)
 
 	mappingsPath := path.Join(env.DataDir, env.MappingsFile)
 	if err := env.initMappings(mappingsPath); err != nil {
@@ -113,7 +113,7 @@ func (env *Environment) initStaticTemplates() {
 
 	for _, t := range staticTemplates {
 		if _, err := os.Stat(t); err != nil {
-			env.Logger.Error("component", "environment", "msg", "Template does not exists!", "environment", t)
+			env.Logger.Error("template does not exist", "component", "environment", "template", t)
 			os.Exit(1)
 		}
 	}

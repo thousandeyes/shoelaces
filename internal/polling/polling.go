@@ -115,7 +115,7 @@ func UpdateTarget(logger log.Logger, serverStates *server.States,
 	}
 
 	hostname := servers[srv.Mac].Server.Hostname
-	logger.Debug("component", "polling", "msg", "Setting server override", "server", srv.Mac, "target", scriptName, "environment", envName, "hostname", hostname, "params", params)
+	logger.Debug("setting server override", "component", "polling", "server", srv.Mac, "target", scriptName, "environment", envName, "hostname", hostname, "params", params)
 	eventLog.AddEvent(event.UserSelection, srv, "", scriptName, nil)
 	servers[srv.Mac].Target = scriptName
 	servers[srv.Mac].Environment = envName
@@ -145,24 +145,24 @@ func attemptAutomaticBoot(logger log.Logger, hostnameMaps []mappings.HostnameMap
 
 	// Find with reverse hostname matched with the hostname regexps
 	if script, found := mappings.FindScriptForHostname(hostnameMaps, srv.Hostname); found {
-		logger.Debug("component", "polling", "msg", "Host found", "where", "hostname-mapping", "host", srv.Hostname)
+		logger.Debug("host found", "component", "polling", "where", "hostname-mapping", "host", srv.Hostname)
 		eventLog.AddEvent(event.HostBoot, srv, event.PtrMatchBoot, script.Name, script.Params)
 		script.Params["hostname"] = srv.Hostname
 
 		return genBootScript(logger, templateRenderer, baseURL, script), found
 	}
-	logger.Debug("component", "polling", "msg", "Host not found", "where", "hostname-mapping", "host", srv.Hostname)
+	logger.Debug("host not found", "component", "polling", "where", "hostname-mapping", "host", srv.Hostname)
 
 	// Find with IP belonging to a configured subnet
 	if script, found := mappings.FindScriptForNetwork(networkMaps, srv.IP); found {
-		logger.Debug("component", "polling", "msg", "Host found", "where", "network-mapping", "ip", srv.IP)
+		logger.Debug("host found", "component", "polling", "where", "network-mapping", "ip", srv.IP)
 		setHostName(script.Params, srv.Mac)
 		srv.Hostname = script.Params["hostname"].(string)
 		eventLog.AddEvent(event.HostBoot, srv, event.SubnetMatchBoot, script.Name, script.Params)
 
 		return genBootScript(logger, templateRenderer, baseURL, script), found
 	}
-	logger.Debug("component", "polling", "msg", "Host not found", "where", "network-mapping", "ip", srv.IP)
+	logger.Debug("host not found", "component", "polling", "where", "network-mapping", "ip", srv.IP)
 
 	return "", false
 }
@@ -171,7 +171,7 @@ func manualAction(logger log.Logger, serverStates *server.States, templateRender
 	eventLog *event.Log, baseURL string, srv server.Server) (scriptText string, err error) {
 
 	script, action := chooseManualAction(logger, serverStates, eventLog, srv)
-	logger.Debug("component", "polling", "target-script-name", script, "action", action)
+	logger.Debug("manual action selected", "component", "polling", "target-script-name", script, "action", action)
 
 	switch action {
 	case BootAction:
@@ -187,7 +187,7 @@ func manualAction(logger log.Logger, serverStates *server.States, templateRender
 		return timeoutScript, nil
 
 	default:
-		logger.Info("component", "polling", "msg", "Unknown action")
+		logger.Info("unknown action", "component", "polling")
 		return "", fmt.Errorf("%s", "Unknown action")
 	}
 }
@@ -201,7 +201,7 @@ func chooseManualAction(logger log.Logger, serverStates *server.States,
 	if m := serverStates.Servers[srv.Mac]; m != nil {
 		if m.Target != server.InitTarget {
 			serverStates.DeleteServer(srv.Mac)
-			logger.Debug("component", "polling", "msg", "Server boot", "mac", srv.Mac)
+			logger.Debug("server boot", "component", "polling", "mac", srv.Mac)
 			return &mappings.Script{
 				Name:        m.Target,
 				Environment: m.Environment,
@@ -209,17 +209,17 @@ func chooseManualAction(logger log.Logger, serverStates *server.States,
 		} else if m.Retry <= maxRetry {
 			m.Retry++
 			m.LastAccess = int(time.Now().UTC().Unix())
-			logger.Debug("component", "polling", "msg", "Retrying reboot", "mac", srv.Mac)
+			logger.Debug("retrying reboot", "component", "polling", "mac", srv.Mac)
 			return nil, RetryAction
 		} else {
 			serverStates.DeleteServer(srv.Mac)
-			logger.Debug("component", "polling", "msg", "Timing out server", "mac", srv.Mac)
+			logger.Debug("timing out server", "component", "polling", "mac", srv.Mac)
 			return nil, TimeoutAction
 		}
 	}
 
 	serverStates.AddServer(srv)
-	logger.Debug("component", "polling", "msg", "New server", "mac", srv.Mac)
+	logger.Debug("new server", "component", "polling", "mac", srv.Mac)
 	eventLog.AddEvent(event.HostPoll, srv, "", "", nil)
 
 	return nil, RetryAction
@@ -246,14 +246,14 @@ func GenStartScript(logger log.Logger, baseURL string) string {
 
 	tmpl, err := template.New("retry").Parse(startScript)
 	if err != nil {
-		logger.Info("component", "polling", "msg", "Error parsing start template")
+		logger.Info("error parsing start template", "component", "polling")
 		panic(err)
 	}
 
 	variablesMap["baseURL"] = baseURL
 	err = tmpl.Execute(parsedTemplate, variablesMap)
 	if err != nil {
-		logger.Info("component", "polling", "msg", "Error executing start template")
+		logger.Info("error executing start template", "component", "polling")
 		panic(err)
 	}
 
@@ -275,7 +275,7 @@ func genRetryScript(logger log.Logger, baseURL string, mac string) string {
 
 	tmpl, err := template.New("retry").Parse(retryScript)
 	if err != nil {
-		logger.Info("component", "polling", "msg", "Error parsing retry template", "mac", mac)
+		logger.Info("error parsing retry template", "component", "polling", "mac", mac)
 		panic(err)
 	}
 
@@ -283,7 +283,7 @@ func genRetryScript(logger log.Logger, baseURL string, mac string) string {
 	variablesMap["macAddress"] = utils.MacColonToDash(mac)
 	err = tmpl.Execute(parsedTemplate, variablesMap)
 	if err != nil {
-		logger.Info("component", "polling", "msg", "Error executing retry template", "mac", mac)
+		logger.Info("error executing retry template", "component", "polling", "mac", mac)
 		panic(err)
 	}
 

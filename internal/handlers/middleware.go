@@ -55,7 +55,7 @@ func loggingMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		logger := envFromRequest(r).Logger
 
-		logger.Info("component", "http", "type", "request", "src", r.RemoteAddr, "method", r.Method, "url", r.URL)
+		logger.Info("http request", "component", "http", "type", "request", "src", r.RemoteAddr, "method", r.Method, "url", r.URL)
 		h.ServeHTTP(w, r)
 	})
 }
