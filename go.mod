@@ -4,7 +4,6 @@ go 1.21
 
 require (
 	github.com/gorilla/mux v1.8.0
-	github.com/justinas/alice v1.2.0
 	github.com/namsral/flag v1.7.4-pre
 	gopkg.in/yaml.v2 v2.4.0
 )
