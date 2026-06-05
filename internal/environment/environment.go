@@ -17,7 +17,6 @@ package environment
 import (
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"net"
 	"os"
 	"path"
@@ -134,7 +133,7 @@ func (env *Environment) initStaticTemplates() {
 func (env *Environment) initEnvOverrides() []string {
 	var environments = make([]string, 0)
 	envPath := filepath.Join(env.DataDir, env.EnvDir)
-	files, err := ioutil.ReadDir(envPath)
+	files, err := os.ReadDir(envPath)
 	if err == nil {
 		for _, f := range files {
 			if f.IsDir() {

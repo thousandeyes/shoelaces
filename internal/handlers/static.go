@@ -16,7 +16,6 @@ package handlers
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
@@ -76,17 +75,17 @@ func (o *OverlayFileServerHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 	}
 
 	isDir := false
-	fileList := make(map[string]os.FileInfo)
+	fileList := make(map[string]os.DirEntry)
 
 	if errUpper == nil && infoUpper.IsDir() {
-		files, _ := ioutil.ReadDir(upper)
+		files, _ := os.ReadDir(upper)
 		for _, f := range files {
 			fileList[f.Name()] = f
 		}
 		isDir = true
 	}
 	if errLower == nil && infoLower.IsDir() {
-		files, _ := ioutil.ReadDir(lower)
+		files, _ := os.ReadDir(lower)
 		for _, f := range files {
 			if _, ok := fileList[f.Name()]; !ok {
 				fileList[f.Name()] = f
