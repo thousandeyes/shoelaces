@@ -101,6 +101,72 @@ func TestSetFlagsCLIConfigOverridesEnvConfig(t *testing.T) {
 	}
 }
 
+func TestSetFlagsEmptyEnvOverridesConfigValue(t *testing.T) {
+	configFile := writeConfig(t, "shoelaces.conf", "base-url=config-base-url\n")
+
+	env := defaultEnvironment()
+	if _, err := env.setFlags(nil, []string{"CONFIG=" + configFile, "BASE_URL="}); err != nil {
+		t.Fatal(err)
+	}
+
+	if env.BaseURL != "" {
+		t.Errorf("Expected empty base URL from env, got %q", env.BaseURL)
+	}
+}
+
+func TestSetFlagsEmptyEnvOverridesDefaultValue(t *testing.T) {
+	env := defaultEnvironment()
+	if _, err := env.setFlags(nil, []string{"ENV_DIR="}); err != nil {
+		t.Fatal(err)
+	}
+
+	if env.EnvDir != "" {
+		t.Errorf("Expected empty env dir from env, got %q", env.EnvDir)
+	}
+}
+
+func TestSetFlagsEmptyConfigValueOverridesDefault(t *testing.T) {
+	configFile := writeConfig(t, "shoelaces.conf", "env-dir=\n")
+
+	env := defaultEnvironment()
+	if _, err := env.setFlags([]string{"-config", configFile}, nil); err != nil {
+		t.Fatal(err)
+	}
+
+	if env.EnvDir != "" {
+		t.Errorf("Expected empty env dir from config, got %q", env.EnvDir)
+	}
+}
+
+func TestSetFlagsEmptyCLIConfigSkipsEnvConfig(t *testing.T) {
+	envConfig := writeConfig(t, "env.conf", "base-url=env-config-base-url\n")
+
+	env := defaultEnvironment()
+	if _, err := env.setFlags([]string{"-config="}, []string{"CONFIG=" + envConfig}); err != nil {
+		t.Fatal(err)
+	}
+
+	if env.BaseURL != "" {
+		t.Errorf("Expected env config file to be skipped, got base URL %q", env.BaseURL)
+	}
+	if env.ConfigFile != "" {
+		t.Errorf("Expected empty config file from CLI, got %q", env.ConfigFile)
+	}
+}
+
+func TestSetFlagsEmptyBoolEnvMeansTrue(t *testing.T) {
+	configFile := writeConfig(t, "shoelaces.conf", "debug=false\n")
+
+	env := defaultEnvironment()
+	if _, err := env.setFlags(nil, []string{"CONFIG=" + configFile, "DEBUG="}); err != nil {
+		t.Fatal(err)
+	}
+
+	if !env.Debug {
+		t.Error("Expected empty DEBUG env var to set debug true")
+	}
+}
+
 func TestSetFlagsReturnsConfigErrors(t *testing.T) {
 	tests := []struct {
 		name   string
@@ -108,6 +174,7 @@ func TestSetFlagsReturnsConfigErrors(t *testing.T) {
 	}{
 		{name: "unknown key", config: "unknown=value\n"},
 		{name: "invalid bool", config: "debug=maybe\n"},
+		{name: "empty bool", config: "debug=\n"},
 	}
 
 	for _, tt := range tests {
