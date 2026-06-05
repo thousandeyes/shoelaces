@@ -1,7 +1,8 @@
 # **Shoelaces:** lightweight and painless server bootstrapping
 
 **Shoelaces** serves [iPXE](https://ipxe.org/) boot scripts,
-[cloud-init](http://cloud-init.org/) configuration, and any other configuration
+[Ignition](https://coreos.github.io/ignition/) configs,
+[cloud-init](http://cloud-init.org/) user-data, and any other configuration
 files over HTTP to hardware or virtual machines booting over iPXE. It also does
 a few other things to make it easier to manage your server deployments:
 
@@ -70,14 +71,12 @@ A couple of things can be said about this screenshot:
 
 At the moment a binary package is not provided. The only way of running
 Shoelaces is to compile it from source. Refer to the Go Programming
-Language [Getting Started](https://golang.org/doc/install) guide to learn
-how to compile Shoelaces.
+Language [Getting Started](https://golang.org/doc/install) guide to install Go.
 
-Once that you have configured your Go, you can get and compile Shoelaces by
-running:
+Once Go is installed, clone and build:
 
-    $ go get github.com/thousandeyes/shoelaces
-    $ cd $GOPATH/src/github.com/thousandeyes/shoelaces
+    $ git clone https://github.com/thousandeyes/shoelaces
+    $ cd shoelaces
     $ go build
 
 ### Running Shoelaces
@@ -114,8 +113,9 @@ Along with your **Shoelaces** installation, you will need a LAN segment with
 working [TFTP](https://en.wikipedia.org/wiki/Trivial_File_Transfer_Protocol) and
 [DHCP](https://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol)
 servers. Any TFTP server should work. The DHCP server will need to be able to
-match the `user-class` of the boot client. In our example the configuration is
-for the widely used [ISC DHCP Server](https://www.isc.org/downloads/dhcp/).
+match the `user-class` of the boot client. The examples below use
+[dnsmasq](https://thekelleys.org.uk/dnsmasq/doc.html) and
+[Kea](https://www.isc.org/kea/), both widely used options.
 Shoelaces will happily coexist with the TFTP and DHCP servers on the same host.
 The server you are going to bootstrap needs to be capable of booting over the
 network using
@@ -134,26 +134,23 @@ to boot using HTTPS.
 
 #### DHCP
 
-Drop this config in your **ISC DHCP** server, replacing the relevant sections
-with your TFTP and Shoelaces server addresses.
-
-```txt
-# dhcp.conf
-next-server <your-tftp-server>;
-if exists user-class and option user-class = "iPXE" {
-  filename "http://<shoelaces-server>/start";
-} else {
-  filename "undionly.kpxe";
-}
-```
-
-For **dnsmasq** (v2.53 or above) you can add this to its existing config, e.g. by
-putting it in `dnsmasq.d/ipxe.conf`:
+For **dnsmasq** (v2.53 or above) add this to its config, e.g. `dnsmasq.d/ipxe.conf`:
 
 ```txt
 dhcp-match=set:ipxe,175 # iPXE sends a 175 option.
 dhcp-boot=tag:!ipxe,undionly.kpxe
 dhcp-boot=http://<shoelaces-server>/start
+```
+
+For **Kea**, set the boot file conditionally on the `user-class` option:
+
+```json
+"option-data": [{ "name": "boot-file-name",
+                  "data": "http://<shoelaces-server>/start" }],
+"client-classes": [{ "name": "iPXE",
+                     "test": "option[77].text == 'iPXE'",
+                     "next-server": "<your-tftp-server>",
+                     "boot-file-name": "undionly.kpxe" }]
 ```
 
 The **${netX/mac:hexhyp}** strings represents the MAC address of the booting
@@ -186,15 +183,15 @@ Shoelaces supports the notion of environments a.k.a. *env overrides*.
 Consider the following `data-dir` directory structure:
 
 ```txt
-├── cloud-config
-│   └── coreos-cloud-config.yaml.slc
 ├── env_overrides
 |   └── testing
-|       └─── cloud-config
-|            └── coreos-cloud-config.yaml.slc
+|       └─── ignition
+|            └── flatcar.ign.slc
+├── ignition
+│   └── flatcar.ign.slc
 ├── ipxe
-│   ├── coreos.ipxe.slc
-│   └── ubuntu-minimal.ipxe.slc
+│   ├── flatcar.ipxe.slc
+│   └── ubuntu.ipxe.slc
 ├── mappings.yaml
 ├── preseed
 │   └── common.preseed.slc
@@ -204,11 +201,10 @@ Consider the following `data-dir` directory structure:
 ```
 
 In this case, hosts that have `environment: testing` set in the `mappings.yaml`
-will be assigned the `testing` environment and they'll use the
-`coreos-cloud-config.yaml.slc` template from the `env_overrides/testing
-directory`, while the rest of the templates will be served from the base
-directory. Everything except `mappings.yaml` can be put in `env_overrides/$env`
-preserving the path.
+will be assigned the `testing` environment and they'll use the `flatcar.ign.slc`
+template from the `env_overrides/testing` directory, while the rest of the
+templates will be served from the base directory. Everything except
+`mappings.yaml` can be put in `env_overrides/$env` preserving the path.
 
 The way this works, considering that **Shoelaces** is mostly stateless, is by
 setting different `baseURL` depending on the environment set. Normal requests
