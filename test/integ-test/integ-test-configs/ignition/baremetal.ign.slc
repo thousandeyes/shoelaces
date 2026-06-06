@@ -1,0 +1,11 @@
+{{define "ignition/baremetal" -}}
+{
+  "ignition": { "version": "3.4.0" },
+  "passwd": {
+    "users": [{ "name": "core", "sshAuthorizedKeys": ["ssh-rsa AAAA... user@example.com"] }]
+  },
+  "storage": {
+    "files": [{ "path": "/etc/hostname", "contents": { "source": "data:,{{.hostname}}" }, "mode": 420 }]
+  }
+}
+{{end}}
