@@ -8,6 +8,9 @@ pkgs = $(shell $(GO) list ./... | grep -v /vendor/)
 all:
 	$(GO) build
 
+run:
+	$(GO) run . -data-dir test/integ-test/integ-test-configs -debug
+
 fmt:
 	$(GO) fmt
 
@@ -23,7 +26,7 @@ test: fmt
 	$(GO) test -v $(pkgs) && \
 		./test/integ-test/integ_test.py -vv
 
-.PHONY: all clean docs
+.PHONY: all run clean docs
 
 binaries: linux windows
 linux:
