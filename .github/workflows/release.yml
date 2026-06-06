@@ -1,0 +1,35 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Build binaries
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)
+          mkdir -p dist
+          for GOARCH in amd64 arm64; do
+            CGO_ENABLED=0 GOOS=linux GOARCH=$GOARCH SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH \
+              go build -trimpath \
+                -ldflags="-s -w -X main.version=${VERSION}" \
+                -o dist/shoelaces-linux-${GOARCH} .
+          done
+          cd dist && sha256sum * > sha256sums.txt
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*

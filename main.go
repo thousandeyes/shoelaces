@@ -23,10 +23,13 @@ import (
 	"github.com/thousandeyes/shoelaces/internal/router"
 )
 
+var version = "dev"
+
 func main() {
 	env := environment.New()
 	app := handlers.MiddlewareChain(env, router.ShoelacesRouter(env))
 
+	env.Logger.Info("starting", "component", "main", "version", version)
 	env.Logger.Info("listening", "component", "main", "transport", "http", "addr", env.BindAddr)
 	env.Logger.Error("server exited", "component", "main", "err", http.ListenAndServe(env.BindAddr, app))
 

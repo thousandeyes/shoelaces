@@ -1,6 +1,7 @@
 GO = go
 SCDOC = scdoc
-LDFLAGS = "-s -w"
+VERSION ?= dev
+LDFLAGS = "-s -w -X main.version=$(VERSION)"
 
 pkgs = $(shell $(GO) list ./... | grep -v /vendor/)
 
@@ -19,13 +20,14 @@ shoelaces.8:
 docs: shoelaces.8
 
 test: fmt
-		$(GO) test -v $(pkgs) && \
-			./test/integ-test/integ_test.py -vv
+	$(GO) test -v $(pkgs) && \
+		./test/integ-test/integ_test.py -vv
 
 .PHONY: all clean docs
 
 binaries: linux windows
 linux:
-		GOOS=linux ${GO} build -o bin/shoelaces -ldflags ${LDFLAGS}
+	SOURCE_DATE_EPOCH=$(shell git log -1 --format=%ct) \
+	CGO_ENABLED=0 GOOS=linux ${GO} build -trimpath -o bin/shoelaces -ldflags ${LDFLAGS}
 windows:
-		GOOS=windows ${GO} build -o bin/shoelaces.exe -ldflags ${LDFLAGS}
+	CGO_ENABLED=0 GOOS=windows ${GO} build -trimpath -o bin/shoelaces.exe -ldflags ${LDFLAGS}
